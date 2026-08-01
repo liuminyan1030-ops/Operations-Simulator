@@ -8,82 +8,80 @@ import java.util.List;
 
 public class Simulator {
 
-    public List<Transaction> run(Configuration configuration) {
+    private final Configuration configuration;
+    private List<StepState> stepStates;
+    private List<VariableValue> variables;
+    private List<Transaction> transactions;
 
-        List<StepState> stepStates = new ArrayList<>();
+    public Simulator(Configuration configuration) {
+        this.configuration = configuration;
+    }
 
+    public List<Transaction> run() {
+        setup();
+        simulate();
+        return transactions;
+    }
+
+    private void setup() {
+        stepStates = new ArrayList<>();
         for (StepDefinition step : configuration.getStepDefinitions()) {
-            stepStates.add(new StepState(
-                    step.getName(),
-                    configuration.getScope().getStartDate()));
+            stepStates.add(new StepState(step, configuration.getScope().getStartDate()));
         }
 
-        List<VariableValue> variables = new ArrayList<>();
-
-        for (VariableDefinition variable :
-                configuration.getVariableDefinitions()) {
-
+        variables = new ArrayList<>();
+        for (VariableDefinition variable : configuration.getVariableDefinitions()) {
             variables.add(new VariableValue(
                     variable.getName(),
                     variable.getStartValue()));
         }
 
-        List<Transaction> transactions = new ArrayList<>();
-
+        transactions = new ArrayList<>();
         transactions.add(new Transaction(
                 configuration.getScope().getStartDate(),
                 "Start Simulation",
                 copyVariables(variables)));
+    }
 
-        LocalDate current =
-                configuration.getScope().getStartDate();
-
-        LocalDate end =
-                configuration.getScope().getEndDate();
+    private void simulate() {
+        LocalDate current = configuration.getScope().getStartDate();
+        LocalDate end = configuration.getScope().getEndDate();
 
         while (!current.isAfter(end)) {
+            simulateOneDay(current);
+            current = current.plusDays(1);
+        }
+    }
 
-            for (int i = 0; i < stepStates.size(); i++) {
+    private void simulateOneDay(LocalDate current) {
+        for (StepState state : stepStates) {
+            if (!state.getDateToRun().equals(current)) {
+                continue;
+            }
 
-                StepState state = stepStates.get(i);
+            StepDefinition step = state.getStepDefinition();
 
-                if (state.getDateToRun().equals(current)) {
-
-                    StepDefinition step =
-                            configuration.getStepDefinitions().get(i);
-
-                    for (VariableValue value : variables) {
-
-                        if (value.getName().equals(step.getVariableName())) {
-                            value.addValue(step.getModifyBy());
-                        }
-                    }
-
-                    transactions.add(new Transaction(
-                            current,
-                            step.getName(),
-                            copyVariables(variables)));
-
-                    state.setDateToRun(
-                            state.getDateToRun().plusMonths(1));
+            for (VariableValue value : variables) {
+                if (value.getName().equals(step.getVariableName())) {
+                    value.addValue(step.getModifyBy());
+                    break; 
                 }
             }
 
-            current = current.plusDays(1);
-        }
+            transactions.add(new Transaction(
+                    current,
+                    step.getName(),
+                    copyVariables(variables)));
 
-        return transactions;
+            state.setDateToRun(state.getDateToRun().plusMonths(1));
+        }
     }
 
     private List<VariableValue> copyVariables(List<VariableValue> variables) {
-
         List<VariableValue> copy = new ArrayList<>();
-
         for (VariableValue variable : variables) {
             copy.add(new VariableValue(variable));
         }
-
         return copy;
     }
-
 }

@@ -4,16 +4,20 @@ import java.time.LocalDate;
 
 public class StepState {
 
-    private String name;
+    private StepDefinition stepDefinition;
     private LocalDate dateToRun;
 
-    public StepState(String name, LocalDate dateToRun) {
-        this.name = name;
+    public StepState(StepDefinition stepDefinition, LocalDate dateToRun) {
+        this.stepDefinition = stepDefinition;
         this.dateToRun = dateToRun;
     }
 
+    public StepDefinition getStepDefinition() {
+        return stepDefinition;
+    }
+
     public String getName() {
-        return name;
+        return stepDefinition.getName();
     }
 
     public LocalDate getDateToRun() {

@@ -1,82 +1,61 @@
 package Test;
+
+import model.*;
+import service.Simulator;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
-import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import model.*;
-
-import service.Simulator;
-
-
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class SimulatorTest {
 
-    @Test
-    public void Test_Run_DefaultScenario_Should_CreateSevenTransactions() {
+	private Configuration configuration;
+	private Simulator simulator;
 
-        Configuration configuration =
-                new Configuration(
+	@BeforeEach
+	public void setUp() {
+		configuration = createDefaultConfiguration();
+		simulator = new Simulator(configuration);
+	}
 
-                        new Scope(
-                                LocalDate.of(2026,8,1),
-                                LocalDate.of(2026,10,31)),
+	@Test
+	public void Test_Run_DefaultScenario_Should_CreateSevenTransactions() {
 
-                        Arrays.asList(
-                                new VariableDefinition("Nuts",100),
-                                new VariableDefinition("Bolts",200)
-                        ),
+		List<Transaction> result = simulator.run();
 
-                        Arrays.asList(
-                                new StepDefinition("Order Nuts","Nuts",50),
-                                new StepDefinition("Order Bolts","Bolts",25)
-                        )
-                );
+		assertEquals(7, result.size());
+	}
 
-        Simulator simulator = new Simulator();
+	@Test
+	public void Test_Run_DefaultScenario_Should_EndWithCorrectInventory() {
 
-        List<Transaction> result =
-                simulator.run(configuration);
+		List<Transaction> result = simulator.run();
 
-        assertEquals(7, result.size());
-    }
+		Transaction last = result.get(result.size() - 1);
+		assertEquals(2, last.getVariableValues().size());
 
-    @Test
-    public void Test_Run_DefaultScenario_Should_EndWithCorrectInventory() {
+		assertContainsVariable(last, "Nuts", 250);
+		assertContainsVariable(last, "Bolts", 275);
+	}
 
-        Configuration configuration =
-                new Configuration(
+	private Configuration createDefaultConfiguration() {
+		return new Configuration(new Scope(LocalDate.of(2026, 8, 1), LocalDate.of(2026, 10, 31)),
+				Arrays.asList(new VariableDefinition("Nuts", 100), new VariableDefinition("Bolts", 200)), 
+				Arrays.asList(new StepDefinition("Order Nuts", "Nuts", 50), new StepDefinition("Order Bolts", "Bolts", 25)));
+	}
 
-                        new Scope(
-                                LocalDate.of(2026,8,1),
-                                LocalDate.of(2026,10,31)),
-
-                        Arrays.asList(
-                                new VariableDefinition("Nuts",100),
-                                new VariableDefinition("Bolts",200)
-                        ),
-
-                        Arrays.asList(
-                                new StepDefinition("Order Nuts","Nuts",50),
-                                new StepDefinition("Order Bolts","Bolts",25)
-                        )
-                );
-
-        Simulator simulator = new Simulator();
-
-        List<Transaction> result =
-                simulator.run(configuration);
-
-        Transaction last =
-                result.get(result.size()-1);
-
-        assertEquals(
-                250,
-                last.getVariableValues().get(0).getValue());
-
-        assertEquals(
-                275,
-                last.getVariableValues().get(1).getValue());
-    }
-
+	private void assertContainsVariable(Transaction transaction, String variableName, int expectedValue) {
+		for (VariableValue value : transaction.getVariableValues()) {
+			if (value.getName().equals(variableName)) {
+				assertEquals(expectedValue, value.getValue(), "Variable " + variableName + " value mismatched!");
+				return;
+			}
+		}
+		fail("Variable with name '" + variableName + "' was not found in transaction!");
+	}
 }
