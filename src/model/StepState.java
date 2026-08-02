@@ -4,7 +4,7 @@ import java.time.LocalDate;
 
 public class StepState {
 
-    private StepDefinition stepDefinition;
+    private final StepDefinition stepDefinition;
     private LocalDate dateToRun;
 
     public StepState(StepDefinition stepDefinition, LocalDate dateToRun) {

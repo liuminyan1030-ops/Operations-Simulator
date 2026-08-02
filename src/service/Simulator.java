@@ -25,8 +25,8 @@ public class Simulator {
 
     private void setup() {
         stepStates = new ArrayList<>();
-        for (StepDefinition step : configuration.getStepDefinitions()) {
-            stepStates.add(new StepState(step, configuration.getScope().getStartDate()));
+        for (StepDefinition stepDefinition : configuration.getStepDefinitions()) {
+            stepStates.add(new StepState(stepDefinition, configuration.getScope().getStartDate()));
         }
 
         variables = new ArrayList<>();
@@ -44,12 +44,12 @@ public class Simulator {
     }
 
     private void simulate() {
-        LocalDate current = configuration.getScope().getStartDate();
-        LocalDate end = configuration.getScope().getEndDate();
+        LocalDate currentDateBeingSimulated = configuration.getScope().getStartDate();
+        LocalDate lastDateToBeSimulated = configuration.getScope().getEndDate();
 
-        while (!current.isAfter(end)) {
-            simulateOneDay(current);
-            current = current.plusDays(1);
+        while (!currentDateBeingSimulated.isAfter(lastDateToBeSimulated)) {
+            simulateOneDay(currentDateBeingSimulated);
+            currentDateBeingSimulated = currentDateBeingSimulated.plusDays(1);
         }
     }
 
