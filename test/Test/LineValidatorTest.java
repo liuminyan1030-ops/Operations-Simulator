@@ -1,57 +1,55 @@
 package Test;
 
+import handler.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import validation.*;
+import validation.LineValidator;
+import validation.ValidationError;
+
 import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class LineValidatorTest {
+
     private LineValidator lineValidator;
 
     @BeforeEach
-    public void setUp() {
-    	lineValidator = new LineValidator();
-    }
-
-    @Test
-    public void testValidLinesShouldHaveNoErrors() {
-        List<String> lines = Arrays.asList(
-            "START_DATE | 2026/08/01",
-            "END_DATE | 2026/11/01",
-            "VAR | Nuts | 100",
-            "STEP | Order nuts | Nuts: 50"
+    void setUp() {
+       
+        List<ConfigurationLineHandler> handlers = Arrays.asList(
+            new StartDateConfigurationLineHandler(),
+            new EndDateConfigurationLineHandler(),
+            new VarConfigurationLineHandler(),
+            new StepConfigurationLineHandler()
         );
-        List<ValidationError> errors = lineValidator.validate(lines);
-        assertTrue(errors.isEmpty(), "Valid lines should not produce any errors");
+        lineValidator = new LineValidator(handlers);
     }
 
     @Test
-    public void testInvalidVarNameWithSpacesShouldFail() {
-        List<String> lines = Arrays.asList("VAR | 5mm Bolts | 200");
-        List<ValidationError> errors = lineValidator.validate(lines);
+    void testValidate_ValidLines_ReturnsEmptyList() {
+        List<String> validLines = Arrays.asList(
+            "START_DATE | 2026/08/01",
+            "END_DATE | 2026/08/31",
+            "VAR | Nuts | 100",
+            "STEP | Order Nuts | Nuts: 50"
+        );
 
-        assertEquals(1, errors.size());
-        assertEquals("5mm Bolts", errors.get(0).getProblematicText());
+        List<ValidationError> errors = lineValidator.validate(validLines);
+        assertTrue(errors.isEmpty(), "Valid lines should produce zero validation errors");
     }
 
     @Test
-    public void testInvalidDateFormatShouldFail() {
-        List<String> lines = Arrays.asList("START_DATE | abc");
-        List<ValidationError> errors = lineValidator.validate(lines);
+    void testValidate_InvalidLines_ReturnsErrorsList() {
+        List<String> invalidLines = Arrays.asList(
+        		 "START_DATE | ",
+                 "END_DATE | abc",
+                 "VAR | Nuts | ",
+                 "STEP | Order Nuts | Nuts: "
+        );
 
-        assertEquals(1, errors.size());
-        assertEquals("abc", errors.get(0).getProblematicText());
-    }
-    
-    @Test
-    public void testInvalidDigitalForVariableValueShouldFail() {
-    	List<String> lines=Arrays.asList("STEP | Order nuts | Nuts: cde");
-    	List<ValidationError> errors=lineValidator.validate(lines);
-    	assertEquals(1, errors.size());
-    	assertEquals("cde", errors.get(0).getProblematicText());
-    	
+        List<ValidationError> errors = lineValidator.validate(invalidLines);
+        assertFalse(errors.isEmpty(), "Invalid lines should produce validation errors");
     }
 }

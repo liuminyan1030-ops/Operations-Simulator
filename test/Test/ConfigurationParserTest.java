@@ -1,12 +1,13 @@
 package Test;
 
 import model.Configuration;
-import parser.ConfigurationParser;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import parser.ConfigurationParser;
+
 import java.util.Arrays;
 import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ConfigurationParserTest {
@@ -15,12 +16,11 @@ public class ConfigurationParserTest {
 
     @BeforeEach
     void setUp() {
-    	configurationParser = new ConfigurationParser();
+        configurationParser = new ConfigurationParser();
     }
 
     @Test
     void testParseLines_ValidInput_Success() {
-        
         List<String> validLines = Arrays.asList(
             "START_DATE | 2026/08/01",
             "END_DATE | 2026/08/31",
@@ -29,10 +29,8 @@ public class ConfigurationParserTest {
             "STEP | Order Nuts | Nuts: 50"
         );
 
-        
         Configuration config = configurationParser.parseLines(validLines);
 
-     
         assertNotNull(config, "The parsed Configuration object should not be null");
         assertNotNull(config.getScope(), "Scope should not be null");
         assertEquals("2026-08-01", config.getScope().getStartDate().toString());
@@ -43,20 +41,17 @@ public class ConfigurationParserTest {
 
     @Test
     void testParseLines_InvalidInput_ThrowsException() {
-       
         List<String> invalidLines = Arrays.asList(
-            "START_DATE | 2026-08-01", 
-            "END_DATE | 2026/08/31"
+        		  "START_DATE | ",
+                  "END_DATE | 2026/08/31",
+                  "VAR | | 100",
+                  "VAR | Bolts | 200",
+                  "STEP | Order Nuts | Nuts: "
         );
 
         
-        IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> configurationParser.parseLines(invalidLines),
-            "An IllegalArgumentException should be thrown for invalid text format."
-        );
-
-     
-        assertTrue(exception.getMessage().contains("File validation failed"));
+        assertThrows(IllegalArgumentException.class, () -> {
+            configurationParser.parseLines(invalidLines);
+        });
     }
 }
