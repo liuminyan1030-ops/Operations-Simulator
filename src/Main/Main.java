@@ -1,41 +1,49 @@
 package Main;
 
 import model.*;
+import parser.ConfigurationParser;
 import service.Simulator;
+import validation.ConfigurationValidator;
 
-import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.List;
 
 public class Main {
 
     public static void main(String[] args) {
+          String filePath = "config.txt"; 
+//        String filePath = "config_invalid.txt"; 
 
-        Configuration configuration = new Configuration(
-                new Scope(
-                        LocalDate.of(2026, 8, 1),
-                        LocalDate.of(2026, 10, 31)),
-                Arrays.asList(
-                        new VariableDefinition("Nuts", 100),
-                        new VariableDefinition("Bolts", 200)
-                ),
-                Arrays.asList(
-                        new StepDefinition("Order Nuts", "Nuts", 50),
-                        new StepDefinition("Order Bolts", "Bolts", 25)
-                )
-        );
+        try {        
+            ConfigurationParser configurationParser = new ConfigurationParser();
+            Configuration configuration = configurationParser.parseFile(filePath);
 
-        Simulator simulator = new Simulator(configuration);
-        List<Transaction> transactions = simulator.run();
+            
+            ConfigurationValidator cofigValidator = new ConfigurationValidator();
+            List<String> errors = cofigValidator.validate(configuration);
 
-        for (Transaction t : transactions) {
-            System.out.println("--------------------------------");
-            System.out.println(t.getDate());
-            System.out.println(t.getDescription());
-
-            for (VariableValue value : t.getVariableValues()) {
-                System.out.println(value.getName() + " : " + value.getValue());
+            if (!errors.isEmpty()) {
+                System.out.println("Configuration validation failed：");
+                for (String err : errors) {
+                    System.out.println(err);
+                }
+                return;
             }
+
+            Simulator simulator = new Simulator(configuration);
+            List<Transaction> transactions = simulator.run();
+
+            for (Transaction t : transactions) {
+                System.out.println("--------------------------------");
+                System.out.println(t.getDate());
+                System.out.println(t.getDescription());
+
+                for (VariableValue variableValue : t.getVariableValues()) {
+                    System.out.println(variableValue.getName() + " : " + variableValue.getValue());
+                }
+            }
+
+        } catch (Exception e) {
+            System.err.println("Failed to read or parse the configuration file-- " + e.getMessage());
         }
     }
 }
