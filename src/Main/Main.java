@@ -18,8 +18,8 @@ public class Main {
             Configuration configuration = configurationParser.parseFile(filePath);
 
             
-            ConfigurationValidator cofigValidator = new ConfigurationValidator();
-            List<String> errors = cofigValidator.validate(configuration);
+            ConfigurationValidator configValidator = new ConfigurationValidator();
+            List<String> errors = configValidator.validate(configuration);
 
             if (!errors.isEmpty()) {
                 System.out.println("Configuration validation failed：");

@@ -1,19 +1,19 @@
 package handler;
 
+import constants.ConfigurationConstants;
 import model.VariableDefinition;
 
-public class VarConfigurationLineHandler implements ConfigurationLineHandler {
-	private static final String PREFIX = "VAR";  
+public class VarConfigurationLineHandler extends AbstractConfigurationLineHandler {
+	public VarConfigurationLineHandler() {
+		super(ConfigurationConstants.KEY_VAR);
+	}
 
 	@Override
 	public boolean validateConfigurationLine(String line) {
-		if (line == null)
+		if (!hasValidPrefix(line))
 			return false;
-		String trimmedLine = line.trim();
-		if (!trimmedLine.startsWith(PREFIX))
-			return false;
-
-		String[] parts = trimmedLine.split("\\|");
+		
+		String[] parts = line.split("\\|");
 		if (parts.length != 3)
 			return false;
 

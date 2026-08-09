@@ -1,8 +1,10 @@
-package Test;
+package test;
 
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import handler.VarConfigurationLineHandler;
 import model.VariableDefinition;
@@ -20,11 +22,16 @@ public class VarConfigurationLineHandlerTest {
 		assertTrue(handler.validateConfigurationLine("VAR | Nuts |100"));
 	}
 	
-    @Test
-    void testValidateConfigurationLine_InvalidFormat() {
-    	assertFalse(handler.validateConfigurationLine("VAR | Bolts| "));
-    	assertFalse(handler.validateConfigurationLine("VAR | | 100"));
-    	assertFalse(handler.validateConfigurationLine("VAR | | "));
+    @ParameterizedTest
+    @CsvSource({
+    	"'VAR | Bolts| ','missing the variable value.'",
+    	"'VAR | | 100','missing the variable name'",
+    	"'VAR | | ','missing the variable name and variable value'"
+    	
+    })
+    void testValidateConfigurationLine_InvalidFormat(String line, String problem) {
+    	assertFalse(handler.validateConfigurationLine(line),"Failed scenario: "+problem);
+    
     }
     
     @Test

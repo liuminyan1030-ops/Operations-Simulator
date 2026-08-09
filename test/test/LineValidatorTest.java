@@ -1,4 +1,4 @@
-package Test;
+package test;
 
 import handler.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -51,5 +51,6 @@ public class LineValidatorTest {
 
         List<ValidationError> errors = lineValidator.validate(invalidLines);
         assertFalse(errors.isEmpty(), "Invalid lines should produce validation errors");
+        assertEquals(4, errors.size(), "Should produce exactly 4 validation errors for 4 invalid lines");
     }
 }

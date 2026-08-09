@@ -1,17 +1,19 @@
 package handler;
 
+import constants.ConfigurationConstants;
 import model.StepDefinition;
 
-public class StepConfigurationLineHandler implements ConfigurationLineHandler {
-	private static final String PREFIX = "STEP";
+public class StepConfigurationLineHandler extends AbstractConfigurationLineHandler {
+	public StepConfigurationLineHandler() {
+		super(ConfigurationConstants.KEY_STEP);
+	}
 
     @Override
     public boolean validateConfigurationLine(String line) {
-        if (line == null) return false;
-        String trimmedLine = line.trim();
-        if (!trimmedLine.startsWith(PREFIX)) return false;
+        if (!hasValidPrefix(line)) return false;
+       
 
-        String[] parts = trimmedLine.split("\\|");
+        String[] parts = line.split("\\|");
         if (parts.length != 3) return false;
 
         String stepName = parts[1].trim();
