@@ -1,0 +1,6 @@
+START_DATE | 2026/08/01
+END_DATE | 2026/10/31
+VAR | Nuts | 100
+VAR | Bolts | 200
+STEP | Order Nuts | Nuts: 50
+STEP | Order Bolts | Bolts: 25
