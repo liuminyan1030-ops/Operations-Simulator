@@ -6,16 +6,17 @@ import model.VariableValue;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.time.format.DateTimeFormatter;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import constants.ConfigurationConstants;
+
 public class TransactionCsvExporter {
 
-	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy/MM/dd");
 
 	public String generateCsvContent(List<Transaction> transactions) {
 		if (transactions == null || transactions.isEmpty()) {
@@ -44,7 +45,7 @@ public class TransactionCsvExporter {
 			String formattedDate = "";
 
 			if (transaction.getDate() != null) {
-				formattedDate = transaction.getDate().format(DATE_FORMATTER);
+				formattedDate = transaction.getDate().format(ConfigurationConstants.DATE_FORMATTER);
 			}
 
 			sb.append(formattedDate).append(", ");
