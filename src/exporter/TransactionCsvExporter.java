@@ -9,9 +9,9 @@ import java.io.PrintWriter;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedHashSet;
+
 import java.util.List;
-import java.util.Set;
+
 
 import constants.ConfigurationConstants;
 
@@ -23,20 +23,22 @@ public class TransactionCsvExporter {
 			return "";
 		}
 
-		Set<String> variableNames = new LinkedHashSet<>();
+		List<String> variableNames = new ArrayList<>();
 		for (Transaction transaction : transactions) {
 			if (transaction.getVariableValues() != null) {
 				for (VariableValue varValue : transaction.getVariableValues()) {
-					variableNames.add(varValue.getName());
+					String name=varValue.getName();
+					if(!variableNames.contains(name)) {
+						variableNames.add(name);
+					}
+					
 				}
 			}
 		}
-
-		List<String> sortedVarNames = new ArrayList<>(variableNames);
-		Collections.sort(sortedVarNames);
+		Collections.sort(variableNames);
 		StringBuilder sb = new StringBuilder();
 		sb.append("Date, Description");
-		for (String varName : sortedVarNames) {
+		for (String varName : variableNames) {
 			sb.append(", ").append(varName);
 		}
 		sb.append("\n");
@@ -52,7 +54,7 @@ public class TransactionCsvExporter {
 			sb.append(transaction.getDescription());
 
 			List<VariableValue> currentVars = transaction.getVariableValues();
-			for (String varName : sortedVarNames) {
+			for (String varName : variableNames) {
 				sb.append(", ");
 				int value = findVariableValue(currentVars, varName);
 				sb.append(value);
