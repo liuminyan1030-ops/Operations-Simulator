@@ -53,27 +53,27 @@ public class Simulator {
         }
     }
 
-    private void simulateOneDay(LocalDate current) {
-        for (StepState state : stepStates) {
-            if (!state.getDateToRun().equals(current)) {
+    private void simulateOneDay(LocalDate currentDate) {
+        for (StepState stepState : stepStates) {
+            if (!stepState.getDateToRun().equals(currentDate)) {
                 continue;
             }
 
-            StepDefinition step = state.getStepDefinition();
+            StepDefinition stepDefinition = stepState.getStepDefinition();
 
-            for (VariableValue value : variables) {
-                if (value.getName().equals(step.getVariableName())) {
-                    value.addValue(step.getModifyBy());
+            for (VariableValue varValue : variables) {
+                if (varValue.getName().equals(stepDefinition.getVariableName())) {
+                	varValue.addValue(stepDefinition.getModifyBy());
                     break; 
                 }
             }
 
             transactions.add(new Transaction(
-                    current,
-                    step.getName(),
+            		currentDate,
+                    stepDefinition.getName(),
                     copyVariables(variables)));
 
-            state.setDateToRun(state.getDateToRun().plusMonths(1));
+            stepState.setDateToRun(stepState.getDateToRun().plusMonths(1));
         }
     }
 

@@ -26,7 +26,7 @@ public class StartDateConfigurationLineHandlerTest {
 
     @ParameterizedTest
     @CsvSource({
-        "'START_DATE | 2026-08-01', 'Invalid date format (hyphen used instead of slash)'",
+        "'START_DATE | 2026:08:01', 'Invalid date format ( colon used instead of slash and hyphen)'",
         "'END_DATE | 2026/08/01', 'Incorrect prefix for StartDate handler'",
         "'START_DATE | 2026/13/01', 'Invalid date value (month exceeds 12)'",
         "'START_DATE | abc', 'Non-date string value'"
