@@ -30,6 +30,19 @@ public class Transaction {
     public List<VariableValue> getVariableValues() {
         return variableValues;
     }
+    
+  
+    public int getVariableValue(String varName) {
+        if (variableValues != null) {
+            for (VariableValue vv : variableValues) {
+                if (vv.getName().equals(varName)) {
+                    return vv.getValue();
+                }
+            }
+        }
+        
+        throw new IllegalArgumentException("Variable not found in transaction: " + varName);
+    }
 
     public Transaction copy() {
 
