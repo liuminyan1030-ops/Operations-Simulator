@@ -5,6 +5,9 @@ import service.Simulator;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import constants.ConfigurationConstants;
+
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
@@ -45,7 +48,7 @@ public class SimulatorTest {
 
 	private Configuration createDefaultConfiguration() {
 		return new Configuration(new Scope(LocalDate.of(2026, 8, 1), LocalDate.of(2026, 10, 31)),
-				Arrays.asList(new VariableDefinition("Nuts", 100), new VariableDefinition("Bolts", 200)), 
+				Arrays.asList(new VariableDefinition("Nuts", 100,ConfigurationConstants.UNIT_QUANTITY), new VariableDefinition("Bolts", 200,ConfigurationConstants.UNIT_QUANTITY)), 
 				Arrays.asList(new StepDefinition("Order Nuts", "Nuts", 50), new StepDefinition("Order Bolts", "Bolts", 25)));
 	}
 

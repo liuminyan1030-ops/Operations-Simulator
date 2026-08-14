@@ -14,13 +14,14 @@ public class VarConfigurationLineHandler extends AbstractConfigurationLineHandle
 			return false;
 		
 		String[] parts = line.split("\\|");
-		if (parts.length != 3)
+		if (parts.length != 4)
 			return false;
 
 		String varName = parts[1].trim();
 		String varValue = parts[2].trim();
+		String varUnit=parts[3].trim();
 
-		if (varName.isEmpty() || varValue.isEmpty())
+		if (varName.isEmpty() || varValue.isEmpty()||varUnit.isEmpty())
 			return false;
 
 		try {
@@ -36,6 +37,7 @@ public class VarConfigurationLineHandler extends AbstractConfigurationLineHandle
 		String[] parts = line.split("\\|");
 		String varName = parts[1].trim();
 		int initialValue = Integer.parseInt(parts[2].trim());
-		return new VariableDefinition(varName, initialValue);
+		String varUnit=parts[3].trim();
+		return new VariableDefinition(varName, initialValue,varUnit);
 	}
 }

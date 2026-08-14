@@ -1,75 +1,99 @@
 package exporter;
 
+import constants.ConfigurationConstants;
+import model.Configuration;
 import model.Transaction;
+import model.VariableDefinition;
 import model.VariableValue;
+
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-
 import java.util.ArrayList;
-import java.util.Collections;
 
 import java.util.List;
 
-import constants.ConfigurationConstants;
-
 public class TransactionCsvExporter {
 
-	public String generateCsvContent(List<Transaction> transactions) {
-		if (transactions == null || transactions.isEmpty()) {
-			return "";
-		}
+    public String generateCsvContent(List<Transaction> transactions, Configuration configuration) {
+        if (transactions == null || transactions.isEmpty()) {
+            return "";
+        }
 
-		List<String> variableNames = new ArrayList<>();
-		for (Transaction transaction : transactions) {
-			if (transaction.getVariableValues() != null) {
-				for (VariableValue varValue : transaction.getVariableValues()) {
-					String name = varValue.getName();
-					if (!variableNames.contains(name)) {
-						variableNames.add(name);
-					}
+        List<String> rawVariableNames = new ArrayList<>();
+        for (Transaction transaction : transactions) {
+            if (transaction.getVariableValues() != null) {
+                for (VariableValue varValue : transaction.getVariableValues()) {
+                    String name = varValue.getName();
+                    if (!rawVariableNames.contains(name)) {
+                        rawVariableNames.add(name);
+                    }
+                }
+            }
+        }
+      
 
-				}
-			}
-		}
-		Collections.sort(variableNames);
-		StringBuilder sb = new StringBuilder();
-		sb.append("Date, Description");
-		for (String varName : variableNames) {
-			sb.append(", ").append(varName);
-		}
-		sb.append("\n");
+        StringBuilder sb = new StringBuilder();
+        sb.append("Date, Description");
+        for (String varName : rawVariableNames) {
+            sb.append(", ");
+            String unit = getUnitForVariable(configuration, varName);
+            if (unit != null && !unit.trim().isEmpty()) {
+                sb.append(varName).append(" (").append(unit.trim()).append(")");
+            } else {
+                sb.append(varName);
+            }
+        }
+        sb.append("\n");
 
-		for (Transaction transaction : transactions) {
-			String formattedDate = "";
+        for (Transaction transaction : transactions) {
+            String formattedDate = "";
+            if (transaction.getDate() != null) {
+                formattedDate = transaction.getDate().format(ConfigurationConstants.DATE_FORMATTER);
+            }
 
-			if (transaction.getDate() != null) {
-				formattedDate = transaction.getDate().format(ConfigurationConstants.DATE_FORMATTER);
-			}
+            sb.append(formattedDate).append(", ");
+            sb.append(transaction.getDescription());
 
-			sb.append(formattedDate).append(", ");
-			sb.append(transaction.getDescription());
+            for (String varName : rawVariableNames) {
+                sb.append(", ");
+                String unit = getUnitForVariable(configuration, varName);
+                try {
+                    int value = transaction.getVariableValue(varName);
+                    sb.append(formatValueByUnit(value, unit));
+                } catch (IllegalArgumentException e) {
+                    sb.append(formatValueByUnit(0, unit));
+                }
+            }
+            sb.append("\n");
+        }
 
-			for (String varName : variableNames) {
-				sb.append(", ");
-				try {
-					int value = transaction.getVariableValue(varName);
-					sb.append(value);
-				} catch (IllegalArgumentException e) {
-					sb.append(0);
-				}
+        return sb.toString();
+    }
 
-			}
-			sb.append("\n");
-		}
+    private String getUnitForVariable(Configuration configuration, String varName) {
+        if (configuration != null && configuration.getVariableDefinitions() != null) {
+            for (VariableDefinition varDefinition : configuration.getVariableDefinitions()) {
+                if (varDefinition.getName().equals(varName)) {
+                    return varDefinition.getUnit();
+                }
+            }
+        }
+        return null;
+    }
 
-		return sb.toString();
-	}
+    private String formatValueByUnit(int value, String unit) {
+        if (ConfigurationConstants.UNIT_MONEY.equalsIgnoreCase(unit)) {
+            return String.format("$%.2f", (double) value);
+        }
+        return String.valueOf(value);
+    }
 
-	public void exportToFile(List<Transaction> transactions, String filePath) throws IOException {
-		String csvContent = generateCsvContent(transactions);
-		try (PrintWriter writer = new PrintWriter(new FileWriter(filePath))) {
-			writer.print(csvContent);
-		}
-	}
+ 
+    public void exportToFile(List<Transaction> transactions, Configuration configuration, String filePath) throws IOException {
+        String csvContent = generateCsvContent(transactions, configuration);
+        try (PrintWriter writer = new PrintWriter(new FileWriter(filePath))) {
+            writer.print(csvContent);
+        }
+    }
 }

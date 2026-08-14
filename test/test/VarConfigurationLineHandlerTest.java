@@ -19,7 +19,7 @@ public class VarConfigurationLineHandlerTest {
 	
 	@Test
 	void testValidateConfigurationLine_validFormat() {
-		assertTrue(handler.validateConfigurationLine("VAR | Nuts |100"));
+		assertTrue(handler.validateConfigurationLine("VAR | Nuts |100 |Quantity"));
 	}
 	
     @ParameterizedTest
@@ -36,11 +36,12 @@ public class VarConfigurationLineHandlerTest {
     
     @Test
     void testGetConfigurationValue_Success() {
-    	Object value=handler.getConfigurationValue("VAR | Nuts |100");
+    	Object value=handler.getConfigurationValue("VAR | Nuts |100 |Quantity");
     	assertTrue(value instanceof VariableDefinition);
     	VariableDefinition variableDefinition = (VariableDefinition) value;
         assertEquals("Nuts", variableDefinition.getName(), "Variable name should parse Nuts");
         assertEquals(100, variableDefinition.getStartValue(), "Variable start value should be 100");
+        assertEquals("Quantity",variableDefinition.getUnit(),"Variable Unit should be Quantity");
     	
     }
 }

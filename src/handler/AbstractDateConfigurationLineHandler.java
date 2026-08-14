@@ -34,6 +34,6 @@ public abstract class AbstractDateConfigurationLineHandler extends AbstractConfi
     @Override
     public Object getConfigurationValue(String line) {
         String[] parts = line.split("\\|");
-        return LocalDate.parse(parts[1].trim(),ConfigurationConstants.DATE_FORMATTER);
+        return LocalDate.parse(parts[1].trim(),ConfigurationConstants.DATE_PARSER);
     }
 }
