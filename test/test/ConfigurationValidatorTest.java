@@ -5,9 +5,6 @@ import validation.ConfigurationValidator;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import constants.ConfigurationConstants;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +26,7 @@ public class ConfigurationValidatorTest {
 		Scope scope = new Scope(LocalDate.of(2026, 8, 1), LocalDate.of(2026, 10, 31));
 
 		List<VariableDefinition> variables = new ArrayList<>();
-		variables.add(new VariableDefinition("Nuts", 100, ConfigurationConstants.UNIT_QUANTITY));
+		variables.add(new VariableDefinition("Nuts", 100, Unit.QUANTITY));
 
 		List<StepDefinition> steps = new ArrayList<>();
 		steps.add(new StepDefinition("Order Nuts", "Nuts", 50));
@@ -60,7 +57,7 @@ public class ConfigurationValidatorTest {
 
 	@Test
 	void testValidate_DuplicateVariables_HasError() {
-		validConfig.getVariableDefinitions().add(new VariableDefinition("Nuts", 200,ConfigurationConstants.UNIT_QUANTITY));
+		validConfig.getVariableDefinitions().add(new VariableDefinition("Nuts", 200,Unit.QUANTITY));
 
 		List<String> errors = configValidator.validate(validConfig);
 

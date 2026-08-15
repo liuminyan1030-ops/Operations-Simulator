@@ -13,6 +13,4 @@ public class ConfigurationConstants {
             .appendPattern("[yyyy/MM/dd][yyyy-MM-dd]")
             .toFormatter();
     public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-    public static final String UNIT_MONEY = "Money";
-    public static final String UNIT_QUANTITY = "Quantity";
 }

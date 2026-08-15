@@ -3,6 +3,7 @@ package exporter;
 import constants.ConfigurationConstants;
 import model.Configuration;
 import model.Transaction;
+import model.Unit;
 import model.VariableDefinition;
 import model.VariableValue;
 
@@ -37,11 +38,14 @@ public class TransactionCsvExporter {
         sb.append("Date, Description");
         for (String varName : rawVariableNames) {
             sb.append(", ");
-            String unit = getUnitForVariable(configuration, varName);
-            if (unit != null && !unit.trim().isEmpty()) {
-                sb.append(varName).append(" (").append(unit.trim()).append(")");
-            } else {
-                sb.append(varName);
+            Unit unit = getUnitForVariable(configuration, varName);
+            if (unit != null) {
+            	String unitStr=unit.toString();
+            	if(!unitStr.trim().isEmpty()) {
+            		sb.append(varName).append(" (").append(unitStr.trim()).append(")");
+            	} else {
+                    sb.append(varName);
+                }               
             }
         }
         sb.append("\n");
@@ -57,7 +61,7 @@ public class TransactionCsvExporter {
 
             for (String varName : rawVariableNames) {
                 sb.append(", ");
-                String unit = getUnitForVariable(configuration, varName);
+                Unit unit = getUnitForVariable(configuration, varName);
                 try {
                     int value = transaction.getVariableValue(varName);
                     sb.append(formatValueByUnit(value, unit));
@@ -71,7 +75,7 @@ public class TransactionCsvExporter {
         return sb.toString();
     }
 
-    private String getUnitForVariable(Configuration configuration, String varName) {
+    private Unit getUnitForVariable(Configuration configuration, String varName) {
         if (configuration != null && configuration.getVariableDefinitions() != null) {
             for (VariableDefinition varDefinition : configuration.getVariableDefinitions()) {
                 if (varDefinition.getName().equals(varName)) {
@@ -79,11 +83,11 @@ public class TransactionCsvExporter {
                 }
             }
         }
-        return null;
+        return Unit.NONE;
     }
 
-    private String formatValueByUnit(int value, String unit) {
-        if (ConfigurationConstants.UNIT_MONEY.equalsIgnoreCase(unit)) {
+    private String formatValueByUnit(int value, Unit unit) {
+    	if (unit == Unit.MONEY) {
             return String.format("$%.2f", (double) value);
         }
         return String.valueOf(value);

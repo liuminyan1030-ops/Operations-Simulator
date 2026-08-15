@@ -3,9 +3,9 @@ package model;
 public class VariableDefinition {
     private String name;
     private int startValue;
-    private String unit; 
+    private Unit unit; 
 
-    public VariableDefinition(String name, int startValue, String unit) {
+    public VariableDefinition(String name, int startValue, Unit unit) {
         this.name = name;
         this.startValue = startValue;
         this.unit = unit;
@@ -19,7 +19,7 @@ public class VariableDefinition {
         return startValue;
     }
 
-    public String getUnit() { 
+    public Unit getUnit() { 
         return unit;
     }
 }

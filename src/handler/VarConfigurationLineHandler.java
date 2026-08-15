@@ -1,7 +1,8 @@
 package handler;
-
+import model.Unit;
 import constants.ConfigurationConstants;
 import model.VariableDefinition;
+
 
 public class VarConfigurationLineHandler extends AbstractConfigurationLineHandler {
 	public VarConfigurationLineHandler() {
@@ -25,10 +26,11 @@ public class VarConfigurationLineHandler extends AbstractConfigurationLineHandle
 			return false;
 
 		try {
-			Integer.parseInt(varValue);
-			return true;
-		} catch (NumberFormatException e) {
-			return false;
+		    Integer.parseInt(varValue);
+		    Unit.valueOf(varUnit.toUpperCase());
+		    return true; 
+		} catch (IllegalArgumentException e) {
+		    return false;
 		}
 	}
 
@@ -38,6 +40,13 @@ public class VarConfigurationLineHandler extends AbstractConfigurationLineHandle
 		String varName = parts[1].trim();
 		int initialValue = Integer.parseInt(parts[2].trim());
 		String varUnit=parts[3].trim();
-		return new VariableDefinition(varName, initialValue,varUnit);
+		Unit unit;
+		try {
+			unit = Unit.valueOf(varUnit.toUpperCase());
+		} catch (IllegalArgumentException e) {
+			unit = Unit.NONE;
+		}
+
+		return new VariableDefinition(varName, initialValue, unit);
 	}
 }

@@ -41,7 +41,7 @@ public class VarConfigurationLineHandlerTest {
     	VariableDefinition variableDefinition = (VariableDefinition) value;
         assertEquals("Nuts", variableDefinition.getName(), "Variable name should parse Nuts");
         assertEquals(100, variableDefinition.getStartValue(), "Variable start value should be 100");
-        assertEquals("Quantity",variableDefinition.getUnit(),"Variable Unit should be Quantity");
+        assertEquals("Quantity",variableDefinition.getUnit().toString(),"Variable Unit should be Quantity");
     	
     }
 }

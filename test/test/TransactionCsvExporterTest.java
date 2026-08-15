@@ -5,10 +5,9 @@ import model.Configuration;
 import model.Scope;
 import model.StepDefinition;
 import model.Transaction;
+import model.Unit;
 import model.VariableDefinition;
 import model.VariableValue;
-import constants.ConfigurationConstants;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -31,9 +30,9 @@ public class TransactionCsvExporterTest {
         Scope scope = new Scope(LocalDate.of(2026, 8, 1), LocalDate.of(2026, 11, 1));
 
         List<VariableDefinition> variableDefinitions = Arrays.asList(
-            new VariableDefinition("Nuts", 100, ConfigurationConstants.UNIT_QUANTITY),
-            new VariableDefinition("Bolts", 200, ConfigurationConstants.UNIT_QUANTITY),
-            new VariableDefinition("Supply_Costs", 0, ConfigurationConstants.UNIT_MONEY)
+            new VariableDefinition("Nuts", 100,Unit.QUANTITY),
+            new VariableDefinition("Bolts", 200, Unit.QUANTITY),
+            new VariableDefinition("Supply_Costs", 0, Unit.MONEY)
         );
 
         List<StepDefinition> stepDefinitions = Arrays.asList(
