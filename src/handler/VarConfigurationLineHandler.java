@@ -24,21 +24,24 @@ public class VarConfigurationLineHandler extends AbstractConfigurationLineHandle
 
 		if (varName.isEmpty() || varValue.isEmpty()||varUnit.isEmpty())
 			return false;
-
-		try {
-		    Integer.parseInt(varValue);
-		    Unit.valueOf(varUnit.toUpperCase());
-		    return true; 
+        Unit unit;
+		try {		  
+		    unit=Unit.valueOf(varUnit.toUpperCase());
 		} catch (IllegalArgumentException e) {
 		    return false;
 		}
+		if(unit==Unit.MONEY) {
+			return varValue.matches("^-?\\d+\\.\\d{2}$");
+			}else if (unit==Unit.QUANTITY) {
+				return varValue.matches("^-?\\d+$");}
+		return true;
 	}
 
 	@Override
 	public VariableDefinition getConfigurationValue(String line) {
 		String[] parts = line.split("\\|");
 		String varName = parts[1].trim();
-		int initialValue = Integer.parseInt(parts[2].trim());
+		String varValue = parts[2].trim();
 		String varUnit=parts[3].trim();
 		Unit unit;
 		try {
@@ -46,7 +49,13 @@ public class VarConfigurationLineHandler extends AbstractConfigurationLineHandle
 		} catch (IllegalArgumentException e) {
 			unit = Unit.NONE;
 		}
+		int initiaValue;
+		if(unit==Unit.MONEY) {
+			initiaValue=(int)Math.round(Double.parseDouble(varValue));
+		}else {
+			initiaValue=Integer.parseInt(varValue);
+		}
 
-		return new VariableDefinition(varName, initialValue, unit);
+		return new VariableDefinition(varName, initiaValue, unit);
 	}
 }

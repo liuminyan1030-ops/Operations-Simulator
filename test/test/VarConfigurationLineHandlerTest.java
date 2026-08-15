@@ -20,15 +20,18 @@ public class VarConfigurationLineHandlerTest {
 	@Test
 	void testValidateConfigurationLine_validFormat() {
 		assertTrue(handler.validateConfigurationLine("VAR | Nuts |100 |Quantity"));
+		assertTrue(handler.validateConfigurationLine("VAR | Supply_Costs | 500.00 | Money"));
 	}
 	
-    @ParameterizedTest
-    @CsvSource({
-    	"'VAR | Bolts| ','missing the variable value.'",
-    	"'VAR | | 100','missing the variable name'",
-    	"'VAR | | ','missing the variable name and variable value'"
-    	
-    })
+	@ParameterizedTest
+	@CsvSource({
+	    "'VAR | Bolts| ', 'missing the variable value.'",
+	    "'VAR | | 100', 'missing the variable name'",
+	    "'VAR | | ', 'missing the variable name and variable value'",
+	    "'VAR | Nuts | 100 | UnknownUnit', 'invalid unit value'",
+	    "'VAR | SUPPLY_COST | 0 | Money', 'value cannot be 0'",          
+	    "'VAR | SUPPLY_COST | 0.0 | Money', 'value cannot be decimal'"  
+	})
     void testValidateConfigurationLine_InvalidFormat(String line, String problem) {
     	assertFalse(handler.validateConfigurationLine(line),"Failed scenario: "+problem);
     
