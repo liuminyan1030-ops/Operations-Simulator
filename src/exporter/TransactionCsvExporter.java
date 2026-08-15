@@ -5,8 +5,6 @@ import model.Configuration;
 import model.Transaction;
 import model.Unit;
 import model.VariableDefinition;
-import model.VariableValue;
-
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -22,14 +20,9 @@ public class TransactionCsvExporter {
         }
 
         List<String> rawVariableNames = new ArrayList<>();
-        for (Transaction transaction : transactions) {
-            if (transaction.getVariableValues() != null) {
-                for (VariableValue varValue : transaction.getVariableValues()) {
-                    String name = varValue.getName();
-                    if (!rawVariableNames.contains(name)) {
-                        rawVariableNames.add(name);
-                    }
-                }
+        if (configuration != null && configuration.getVariableDefinitions() != null) {
+            for (VariableDefinition varDefinition : configuration.getVariableDefinitions()) {
+                rawVariableNames.add(varDefinition.getName());
             }
         }
       
