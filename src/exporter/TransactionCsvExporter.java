@@ -13,6 +13,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TransactionCsvExporter {
+	private final ValueFormatter valueFormatter;
+	
+	public TransactionCsvExporter(ValueFormatter valueFormatter) {
+		this.valueFormatter=valueFormatter;
+	}
+	
+	public TransactionCsvExporter() {
+	    this(new ValueFormatter());
+	}
 
     public String generateCsvContent(List<Transaction> transactions, Configuration configuration) {
         if (transactions == null || transactions.isEmpty()) {
@@ -57,9 +66,9 @@ public class TransactionCsvExporter {
                 Unit unit = varDefinition.getUnit();
                 try {
                     int value = transaction.getVariableValue(varDefinition.getName());
-                    sb.append(formatValueByUnit(value, unit));
+                    sb.append(valueFormatter.formatValueByUnit(value, unit));
                 } catch (IllegalArgumentException e) {
-                    sb.append(formatValueByUnit(0, unit));
+                    sb.append(valueFormatter.formatValueByUnit(0, unit));
                 }
             }
             sb.append("\n");
@@ -68,13 +77,6 @@ public class TransactionCsvExporter {
         return sb.toString();
     }
 
-
-    private String formatValueByUnit(int value, Unit unit) {
-    	if (unit == Unit.MONEY) {
-            return String.format("$%.2f", (double) value);
-        }
-        return String.valueOf(value);
-    }
 
  
     public void exportToFile(List<Transaction> transactions, Configuration configuration, String filePath) throws IOException {
