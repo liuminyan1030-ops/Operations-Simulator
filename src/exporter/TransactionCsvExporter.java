@@ -19,26 +19,26 @@ public class TransactionCsvExporter {
             return "";
         }
 
-        List<String> rawVariableNames = new ArrayList<>();
+        List<VariableDefinition> varDefinitions = new ArrayList<>();
         if (configuration != null && configuration.getVariableDefinitions() != null) {
-            for (VariableDefinition varDefinition : configuration.getVariableDefinitions()) {
-                rawVariableNames.add(varDefinition.getName());
-            }
+           varDefinitions=configuration.getVariableDefinitions();
         }
       
 
         StringBuilder sb = new StringBuilder();
         sb.append("Date, Description");
-        for (String varName : rawVariableNames) {
+        for (VariableDefinition varDefinition:varDefinitions) {
             sb.append(", ");
-            Unit unit = getUnitForVariable(configuration, varName);
+            Unit unit = varDefinition.getUnit();
             if (unit != null) {
             	String unitStr=unit.toString();
             	if(!unitStr.trim().isEmpty()) {
-            		sb.append(varName).append(" (").append(unitStr.trim()).append(")");
+            		sb.append(varDefinition.getName()).append(" (").append(unitStr.trim()).append(")");
             	} else {
-                    sb.append(varName);
+                    sb.append(varDefinition.getName());
                 }               
+            }else {
+                sb.append(varDefinition.getName());
             }
         }
         sb.append("\n");
@@ -52,11 +52,11 @@ public class TransactionCsvExporter {
             sb.append(formattedDate).append(", ");
             sb.append(transaction.getDescription());
 
-            for (String varName : rawVariableNames) {
+            for (VariableDefinition varDefinition : varDefinitions) {
                 sb.append(", ");
-                Unit unit = getUnitForVariable(configuration, varName);
+                Unit unit = varDefinition.getUnit();
                 try {
-                    int value = transaction.getVariableValue(varName);
+                    int value = transaction.getVariableValue(varDefinition.getName());
                     sb.append(formatValueByUnit(value, unit));
                 } catch (IllegalArgumentException e) {
                     sb.append(formatValueByUnit(0, unit));
@@ -68,16 +68,6 @@ public class TransactionCsvExporter {
         return sb.toString();
     }
 
-    private Unit getUnitForVariable(Configuration configuration, String varName) {
-        if (configuration != null && configuration.getVariableDefinitions() != null) {
-            for (VariableDefinition varDefinition : configuration.getVariableDefinitions()) {
-                if (varDefinition.getName().equals(varName)) {
-                    return varDefinition.getUnit();
-                }
-            }
-        }
-        return Unit.NONE;
-    }
 
     private String formatValueByUnit(int value, Unit unit) {
     	if (unit == Unit.MONEY) {
