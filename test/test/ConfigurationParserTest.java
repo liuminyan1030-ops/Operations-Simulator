@@ -26,8 +26,8 @@ public class ConfigurationParserTest {
       Configuration config=configurationParser.parseFile("config.txt");
       assertNotNull(config);
       assertEquals("2026/08/01",config.getScope().getStartDate().format(ConfigurationConstants.DATE_FORMATTER));
-      assertEquals("2026/10/31",config.getScope().getEndDate().format(ConfigurationConstants.DATE_FORMATTER));
-      assertEquals(2,config.getVariableDefinitions().size());
+      assertEquals("2026/11/01",config.getScope().getEndDate().format(ConfigurationConstants.DATE_FORMATTER));
+      assertEquals(3,config.getVariableDefinitions().size());
       assertEquals(2,config.getStepDefinitions().size());
 
     }

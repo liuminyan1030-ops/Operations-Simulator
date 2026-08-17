@@ -26,7 +26,7 @@ public class ConfigurationValidatorTest {
 		Scope scope = new Scope(LocalDate.of(2026, 8, 1), LocalDate.of(2026, 10, 31));
 
 		List<VariableDefinition> variables = new ArrayList<>();
-		variables.add(new VariableDefinition("Nuts", 100));
+		variables.add(new VariableDefinition("Nuts", 100, Unit.QUANTITY));
 
 		List<StepDefinition> steps = new ArrayList<>();
 		steps.add(new StepDefinition("Order Nuts", "Nuts", 50));
@@ -57,7 +57,7 @@ public class ConfigurationValidatorTest {
 
 	@Test
 	void testValidate_DuplicateVariables_HasError() {
-		validConfig.getVariableDefinitions().add(new VariableDefinition("Nuts", 200));
+		validConfig.getVariableDefinitions().add(new VariableDefinition("Nuts", 200,Unit.QUANTITY));
 
 		List<String> errors = configValidator.validate(validConfig);
 

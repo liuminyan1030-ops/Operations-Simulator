@@ -1,75 +1,88 @@
 package exporter;
 
+import constants.ConfigurationConstants;
+import model.Configuration;
 import model.Transaction;
-import model.VariableValue;
+import model.Unit;
+import model.VariableDefinition;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-
 import java.util.ArrayList;
-import java.util.Collections;
 
 import java.util.List;
 
-import constants.ConfigurationConstants;
-
 public class TransactionCsvExporter {
-
-	public String generateCsvContent(List<Transaction> transactions) {
-		if (transactions == null || transactions.isEmpty()) {
-			return "";
-		}
-
-		List<String> variableNames = new ArrayList<>();
-		for (Transaction transaction : transactions) {
-			if (transaction.getVariableValues() != null) {
-				for (VariableValue varValue : transaction.getVariableValues()) {
-					String name = varValue.getName();
-					if (!variableNames.contains(name)) {
-						variableNames.add(name);
-					}
-
-				}
-			}
-		}
-		Collections.sort(variableNames);
-		StringBuilder sb = new StringBuilder();
-		sb.append("Date, Description");
-		for (String varName : variableNames) {
-			sb.append(", ").append(varName);
-		}
-		sb.append("\n");
-
-		for (Transaction transaction : transactions) {
-			String formattedDate = "";
-
-			if (transaction.getDate() != null) {
-				formattedDate = transaction.getDate().format(ConfigurationConstants.DATE_FORMATTER);
-			}
-
-			sb.append(formattedDate).append(", ");
-			sb.append(transaction.getDescription());
-
-			for (String varName : variableNames) {
-				sb.append(", ");
-				try {
-					int value = transaction.getVariableValue(varName);
-					sb.append(value);
-				} catch (IllegalArgumentException e) {
-					sb.append(0);
-				}
-
-			}
-			sb.append("\n");
-		}
-
-		return sb.toString();
+	private final ValueFormatter valueFormatter;
+	
+	public TransactionCsvExporter(ValueFormatter valueFormatter) {
+		this.valueFormatter=valueFormatter;
+	}
+	
+	public TransactionCsvExporter() {
+	    this(new ValueFormatter());
 	}
 
-	public void exportToFile(List<Transaction> transactions, String filePath) throws IOException {
-		String csvContent = generateCsvContent(transactions);
-		try (PrintWriter writer = new PrintWriter(new FileWriter(filePath))) {
-			writer.print(csvContent);
-		}
-	}
+    public String generateCsvContent(List<Transaction> transactions, Configuration configuration) {
+        if (transactions == null || transactions.isEmpty()) {
+            return "";
+        }
+
+        List<VariableDefinition> varDefinitions = new ArrayList<>();
+        if (configuration != null && configuration.getVariableDefinitions() != null) {
+           varDefinitions=configuration.getVariableDefinitions();
+        }
+      
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("Date, Description");
+        for (VariableDefinition varDefinition:varDefinitions) {
+            sb.append(", ");
+            Unit unit = varDefinition.getUnit();
+            if (unit != null) {
+            	String unitStr=unit.toString();
+            	if(!unitStr.trim().isEmpty()) {
+            		sb.append(varDefinition.getName()).append(" (").append(unitStr.trim()).append(")");
+            	} else {
+                    sb.append(varDefinition.getName());
+                }               
+            }else {
+                sb.append(varDefinition.getName());
+            }
+        }
+        sb.append("\n");
+
+        for (Transaction transaction : transactions) {
+            String formattedDate = "";
+            if (transaction.getDate() != null) {
+                formattedDate = transaction.getDate().format(ConfigurationConstants.DATE_FORMATTER);
+            }
+
+            sb.append(formattedDate).append(", ");
+            sb.append(transaction.getDescription());
+
+            for (VariableDefinition varDefinition : varDefinitions) {
+                sb.append(", ");
+                Unit unit = varDefinition.getUnit();
+                try {
+                    int value = transaction.getVariableValue(varDefinition.getName());
+                    sb.append(valueFormatter.formatValueByUnit(value, unit));
+                } catch (IllegalArgumentException e) {
+                    sb.append(valueFormatter.formatValueByUnit(0, unit));
+                }
+            }
+            sb.append("\n");
+        }
+
+        return sb.toString();
+    }
+
+
+ 
+    public void exportToFile(List<Transaction> transactions, Configuration configuration, String filePath) throws IOException {
+        String csvContent = generateCsvContent(transactions, configuration);
+        try (PrintWriter writer = new PrintWriter(new FileWriter(filePath))) {
+            writer.print(csvContent);
+        }
+    }
 }

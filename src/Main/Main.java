@@ -35,9 +35,9 @@ public class Main {
             List<Transaction> transactions = simulator.run();
             
             TransactionCsvExporter csvExporter=new TransactionCsvExporter();
-            String csvContent=csvExporter.generateCsvContent(transactions);
+            String csvContent=csvExporter.generateCsvContent(transactions,configuration);
             System.out.println(csvContent);
-            csvExporter.exportToFile(transactions, "output.csv");
+            csvExporter.exportToFile(transactions, configuration,"output.csv");
         }catch(Exception e) {
         	System.err.println("Failed to execute application: " + e.getMessage());
         }

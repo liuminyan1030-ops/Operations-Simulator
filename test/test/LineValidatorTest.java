@@ -32,7 +32,7 @@ public class LineValidatorTest {
         List<String> validLines = Arrays.asList(
             "START_DATE | 2026/08/01",
             "END_DATE | 2026/08/31",
-            "VAR | Nuts | 100",
+            "VAR | Nuts | 100 | Quantity",
             "STEP | Order Nuts | Nuts: 50"
         );
 
