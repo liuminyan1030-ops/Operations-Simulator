@@ -37,14 +37,19 @@ public class VarConfigurationLineHandlerTest {
     
     }
     
-    @Test
-    void testGetConfigurationValue_Success() {
-    	Object value=handler.getConfigurationValue("VAR | Nuts |100 |Quantity");
-    	assertTrue(value instanceof VariableDefinition);
-    	VariableDefinition variableDefinition = (VariableDefinition) value;
-        assertEquals("Nuts", variableDefinition.getName(), "Variable name should parse Nuts");
-        assertEquals(100, variableDefinition.getStartValue(), "Variable start value should be 100");
-        assertEquals("Quantity",variableDefinition.getUnit().toString(),"Variable Unit should be Quantity");
-    	
-    }
+	@ParameterizedTest
+	@CsvSource({
+		"'VAR | Nuts | 100 | Quantity', Nuts, 100, Quantity",
+	    "'VAR | Supply_Costs | 500 | Money', Supply_Costs, 500, Money"
+	})
+	void testGetConfigurationValue_Success(String line, String expectedName, int expectedValue, String expectedUnit) {
+	    Object value = handler.getConfigurationValue(line);
+	    
+	    assertTrue(value instanceof VariableDefinition);
+	    VariableDefinition variableDefinition = (VariableDefinition) value;
+	    
+	    assertEquals(expectedName, variableDefinition.getName());
+	    assertEquals(expectedValue, variableDefinition.getStartValue());
+	    assertEquals(expectedUnit, variableDefinition.getUnit().toString());
+	}
 }
