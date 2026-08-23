@@ -31,7 +31,7 @@ public class VarConfigurationLineHandler extends AbstractConfigurationLineHandle
 		    return false;
 		}
 		if(unit==Unit.MONEY) {
-			return varValue.matches("^-?\\d+\\.\\d{2}$");
+			return varValue.matches("^-?\\d+\\.\\d{2}$") || varValue.matches("^-?\\d+$");
 			}else if (unit==Unit.QUANTITY) {
 				return varValue.matches("^-?\\d+$");}
 		return true;

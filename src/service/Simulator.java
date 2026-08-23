@@ -47,7 +47,7 @@ public class Simulator {
         LocalDate currentDateBeingSimulated = configuration.getScope().getStartDate();
         LocalDate lastDateToBeSimulated = configuration.getScope().getEndDate();
 
-        while (!currentDateBeingSimulated.isAfter(lastDateToBeSimulated)) {
+        while (currentDateBeingSimulated.isBefore(lastDateToBeSimulated)) {
             simulateOneDay(currentDateBeingSimulated);
             currentDateBeingSimulated = currentDateBeingSimulated.plusDays(1);
         }
@@ -60,13 +60,16 @@ public class Simulator {
             }
 
             StepDefinition stepDefinition = stepState.getStepDefinition();
-
-            for (VariableValue varValue : variables) {
-                if (varValue.getName().equals(stepDefinition.getVariableName())) {
-                	varValue.addValue(stepDefinition.getModifyBy());
-                    break; 
-                }
-            }
+            
+            for(VariableChange varChange:stepDefinition.getVariableChanges()) {
+            	for (VariableValue varValue : variables) {
+            		if(varValue.getName().equals(varChange.getVariableName())) {
+            			varValue.addValue(varChange.getModifyBy());
+            			break;
+            		}
+            	}
+            	
+            } 	
 
             transactions.add(new Transaction(
             		currentDate,

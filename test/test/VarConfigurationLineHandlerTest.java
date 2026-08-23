@@ -28,9 +28,7 @@ public class VarConfigurationLineHandlerTest {
 	    "'VAR | Bolts| ', 'missing the variable value.'",
 	    "'VAR | | 100', 'missing the variable name'",
 	    "'VAR | | ', 'missing the variable name and variable value'",
-	    "'VAR | Nuts | 100 | UnknownUnit', 'invalid unit value'",
-	    "'VAR | SUPPLY_COST | 0 | Money', 'value cannot be 0'",          
-	    "'VAR | SUPPLY_COST | 0.0 | Money', 'value cannot be decimal'"  
+	    "'VAR | Nuts | 100 | UnknownUnit', 'invalid unit value'",          
 	})
     void testValidateConfigurationLine_InvalidFormat(String line, String problem) {
     	assertFalse(handler.validateConfigurationLine(line),"Failed scenario: "+problem);

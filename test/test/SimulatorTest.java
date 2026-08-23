@@ -36,16 +36,18 @@ public class SimulatorTest {
 		List<Transaction> result = simulator.run();
 
 		Transaction last = result.get(result.size() - 1);
-		assertEquals(2, last.getVariableValues().size());
+		assertEquals(3, last.getVariableValues().size());
 
 		assertContainsVariable(last, "Nuts", 250);
 		assertContainsVariable(last, "Bolts", 275);
+		assertContainsVariable(last, "Supply_Costs", 450);
 	}
 
 	private Configuration createDefaultConfiguration() {
 		return new Configuration(new Scope(LocalDate.of(2026, 8, 1), LocalDate.of(2026, 10, 31)),
-				Arrays.asList(new VariableDefinition("Nuts", 100,Unit.QUANTITY), new VariableDefinition("Bolts", 200,Unit.QUANTITY)), 
-				Arrays.asList(new StepDefinition("Order Nuts", "Nuts", 50), new StepDefinition("Order Bolts", "Bolts", 25)));
+				Arrays.asList(new VariableDefinition("Nuts", 100,Unit.QUANTITY), new VariableDefinition("Bolts", 200,Unit.QUANTITY),new VariableDefinition("Supply_Costs", 0, Unit.MONEY)), 
+				Arrays.asList(new StepDefinition("Order Nuts",Arrays.asList(new VariableChange( "Nuts", 50),new VariableChange("Supply_Costs",100))) ,
+						new StepDefinition("Order Bolts", Arrays.asList(new VariableChange("Bolts", 25),new VariableChange("Supply_Costs",50)))));
 	}
 
 	private void assertContainsVariable(Transaction transaction, String variableName, int expectedValue) {
