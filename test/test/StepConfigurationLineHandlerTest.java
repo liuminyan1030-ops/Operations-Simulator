@@ -23,7 +23,8 @@ public class StepConfigurationLineHandlerTest {
 
 	@ParameterizedTest
 	@CsvSource({ "'STEP | Order Nuts | Nuts: 50', 'Valid step line with Nuts variable'",
-			"'STEP | Order Bolts | Bolts: 10', 'Valid step line with Bolts variable'" })
+			"'STEP | Order Bolts | Bolts: 10', 'Valid step line with Bolts variable'" ,
+			"'STEP | Order Nuts | Nuts: 50, Supply_Costs: 100','Valid step line with two variable changes'"})
 	void testValidateConfigurationLine_ValidFormat(String line, String description) {
 		assertTrue(handler.validateConfigurationLine(line), "Successful scenario: " + description);
 	}
@@ -34,7 +35,11 @@ public class StepConfigurationLineHandlerTest {
 			"'STEP | Order Nuts | Nuts', 'Missing colon and amount in variable mapping'",
 			"'STEP | Order Nuts | Nuts:', 'Missing amount after colon'",
 			"'STEP | Order Nuts | Nuts: ABC', 'Non-numeric amount value'",
-			"'VAR | Order Nuts | Nuts: 50', 'Incorrect prefix for Step handler'" })
+			"'VAR | Order Nuts | Nuts: 50', 'Incorrect prefix for Step handler'" ,
+			"'STEP | Order Nuts | Nuts: 50, Supply_Costs: ABC', 'Non-numeric amount in second variable change'",
+			"'STEP | Order Nuts | Nuts: 50, Supply_Costs:', 'Missing amount in second variable change'",
+			"'STEP | Order Nuts | Nuts: 50, : 100', 'Missing variable name in second variable change'",
+			"'STEP | Order Nuts | Nuts: 50, Supply_Costs', 'Missing colon and variable value in second variable change'"})
 	void testValidateConfigurationLine_InvalidFormat(String line, String problem) {
 		assertFalse(handler.validateConfigurationLine(line), "Failed scenario: " + problem);
 	}
@@ -50,6 +55,6 @@ public class StepConfigurationLineHandlerTest {
 		assertEquals("Nuts", varChanges.get(0).getVariableName(), "the variable name should parse Nuts");
 		assertEquals("Supply_Costs", varChanges.get(1).getVariableName(),"the variable name should parse Supply_Costs");
 		assertEquals(50, varChanges.get(0).getModifyBy(), "the modify value of Nuts should be 50");
-		assertEquals(100, varChanges.get(1).getModifyBy(), "the modify value of Supply_Costs should be 50");
+		assertEquals(100, varChanges.get(1).getModifyBy(), "the modify value of Supply_Costs should be 100");
 	}
 }

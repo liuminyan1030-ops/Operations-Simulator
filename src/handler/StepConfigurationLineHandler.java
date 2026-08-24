@@ -26,17 +26,17 @@ public class StepConfigurationLineHandler extends AbstractConfigurationLineHandl
 
 		if (stepName.isEmpty() || variableStr.isEmpty())
 			return false;
-		String[] variableParts = variableStr.split(",");
-		for (String varPart : variableParts) {
-			String[] varKeyValue = varPart.split(":");
-			if (varKeyValue.length != 2)
+		String[] variableChangeParts = variableStr.split(",");
+		for (String variableChangePart : variableChangeParts) {
+			String[] variableChangeKeyValue = variableChangePart.split(":");
+			if (variableChangeKeyValue.length != 2)
 				return false;
-			String varName = varKeyValue[0].trim();
-			String varValue = varKeyValue[1].trim();
-			if (varName.isEmpty() || varValue.isEmpty())
+			String variableChangeVariableName = variableChangeKeyValue[0].trim();
+			String variableChangeModifyBy = variableChangeKeyValue[1].trim();
+			if (variableChangeVariableName.isEmpty() || variableChangeModifyBy.isEmpty())
 				return false;
 			try {
-				Integer.parseInt(varValue);
+				Integer.parseInt(variableChangeModifyBy);
 
 			} catch (NumberFormatException e) {
 				return false;
@@ -49,14 +49,14 @@ public class StepConfigurationLineHandler extends AbstractConfigurationLineHandl
 	public StepDefinition getConfigurationValue(String line) {
 		String[] parts = line.split("\\|");
 		String stepName = parts[1].trim();
-		String[] variableParts = parts[2].trim().split(",");
+		String[] variableChangeParts = parts[2].trim().split(",");
 		List<VariableChange> varChanges = new ArrayList<>();
-		for (String variablePart : variableParts) {
-			String[] variableKeyValue = variablePart.split(":");
-			String varName = variableKeyValue[0].trim();
-			String varValue = variableKeyValue[1].trim();
-			int variableModifyValue = Integer.parseInt(varValue);
-			varChanges.add(new VariableChange(varName, variableModifyValue));
+		for (String variableChangePart : variableChangeParts) {
+			String[] variableChangeKeyValue = variableChangePart.split(":");
+			String variableChangeVariableName = variableChangeKeyValue[0].trim();
+			String variableChangeVariableValue = variableChangeKeyValue[1].trim();
+			int variableModifyValue = Integer.parseInt(variableChangeVariableValue);
+			varChanges.add(new VariableChange(variableChangeVariableName, variableModifyValue));
 
 		}
 		return new StepDefinition(stepName, varChanges);
