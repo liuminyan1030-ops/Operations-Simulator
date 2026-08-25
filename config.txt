@@ -3,7 +3,7 @@ END_DATE | 2026/11/01
 
 VAR | Nuts | 100 | Quantity
 VAR | Bolts | 200 | Quantity
-VAR | Supply_Costs | 0.00 | Money
+VAR | Supply_Costs | 0 | Money
 
-STEP | Order nuts | Nuts: 50
-STEP | Order bolts | Bolts: 25
+STEP | Order nuts | Nuts: 50, Supply_Costs: 100
+STEP | Order bolts | Bolts: 25, Supply_Costs: 50

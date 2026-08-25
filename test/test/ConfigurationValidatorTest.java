@@ -5,8 +5,11 @@ import validation.ConfigurationValidator;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.lang.reflect.Array;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -23,15 +26,18 @@ public class ConfigurationValidatorTest {
 	}
 
 	private Configuration createValidConfiguration() {
-		Scope scope = new Scope(LocalDate.of(2026, 8, 1), LocalDate.of(2026, 10, 31));
+		Scope scope = new Scope(LocalDate.of(2026, 8, 1), LocalDate.of(2026, 11, 1));
 
-		List<VariableDefinition> variables = new ArrayList<>();
-		variables.add(new VariableDefinition("Nuts", 100, Unit.QUANTITY));
+		List<VariableDefinition> variablesDefinition = new ArrayList<>();
+		variablesDefinition.add(new VariableDefinition("Nuts", 100, Unit.QUANTITY));
+		variablesDefinition.add(new VariableDefinition("Supply_Costs", 0, Unit.MONEY));
 
-		List<StepDefinition> steps = new ArrayList<>();
-		steps.add(new StepDefinition("Order Nuts", "Nuts", 50));
+		List<StepDefinition> stepDefinition = new ArrayList<>();
+		stepDefinition.add(new StepDefinition("Order Nuts", Arrays.asList(
+				new VariableChange("Nuts", 50),
+				new VariableChange("Supply_Costs", 100))));
 
-		return new Configuration(scope, variables, steps);
+		return new Configuration(scope, variablesDefinition, stepDefinition);
 	}
 
 	@Test
@@ -45,7 +51,7 @@ public class ConfigurationValidatorTest {
 	@Test
 	void testValidate_StartDateAfterEndDate_HasError() {
 
-		Scope invalidScope = new Scope(LocalDate.of(2026, 10, 31), LocalDate.of(2026, 8, 1));
+		Scope invalidScope = new Scope(LocalDate.of(2026, 11, 1), LocalDate.of(2026, 8, 1));
 		Configuration invalidConfig = new Configuration(invalidScope, validConfig.getVariableDefinitions(),
 				validConfig.getStepDefinitions());
 
@@ -68,7 +74,7 @@ public class ConfigurationValidatorTest {
 	@Test
 	void testValidate_UndefinedVariableInStep_HasError() {
 
-		validConfig.getStepDefinitions().add(new StepDefinition("Order Bolts", "Bolts", 50));
+		validConfig.getStepDefinitions().add(new StepDefinition("Order Bolts", Arrays.asList(new VariableChange("Bolts", 50))));
 
 		List<String> errors = configValidator.validate(validConfig);
 

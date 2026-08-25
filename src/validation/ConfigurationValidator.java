@@ -32,7 +32,8 @@ public class ConfigurationValidator {
 				String variableName = variableDefinition.getName();
 
 				if (declaredVariablesName.contains(variableName)) {
-					errors.add(ConfigurationConstants.KEY_VAR + ":"+ "Duplicate variable definition found: '" + variableName + "'.");
+					errors.add(ConfigurationConstants.KEY_VAR + ":" + "Duplicate variable definition found: '"
+							+ variableName + "'.");
 				} else {
 
 					declaredVariablesName.add(variableName);
@@ -42,12 +43,15 @@ public class ConfigurationValidator {
 
 		if (config.getStepDefinitions() != null) {
 			for (StepDefinition stepDefinition : config.getStepDefinitions()) {
-				String targetVariableName = stepDefinition.getVariableName();
-
-				if (targetVariableName != null && !declaredVariablesName.contains(targetVariableName)) {
-					errors.add(ConfigurationConstants.KEY_STEP +":" + stepDefinition.getName() + " references an undefined variable: "
-							+ targetVariableName + ".");
+				List<VariableChange> varChanges = stepDefinition.getVariableChanges();
+				for (VariableChange varChange : varChanges) {
+					String varName = varChange.getVariableName();
+					if (varName != null && !declaredVariablesName.contains(varName)) {
+						errors.add(ConfigurationConstants.KEY_STEP + ":" + stepDefinition.getName()
+								+ " references an undefined variable: " + varName + ".");
+					}
 				}
+
 			}
 		}
 

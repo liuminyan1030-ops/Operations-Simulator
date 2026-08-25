@@ -1,26 +1,24 @@
 package model;
 
+import java.util.List;
+
 public class StepDefinition {
 
     private String name;
-    private String variableName;
-    private int modifyBy;
+    private List<VariableChange> variableChanges;
 
-    public StepDefinition(String name, String variableName, int modifyBy) {
+    public StepDefinition(String name, List<VariableChange> variableChanges) {
         this.name = name;
-        this.variableName = variableName;
-        this.modifyBy = modifyBy;
+        this.variableChanges=variableChanges;
     }
 
     public String getName() {
         return name;
     }
 
-    public String getVariableName() {
-        return variableName;
+    public List<VariableChange> getVariableChanges() {
+        return variableChanges;
     }
 
-    public int getModifyBy() {
-        return modifyBy;
-    }
+ 
 }

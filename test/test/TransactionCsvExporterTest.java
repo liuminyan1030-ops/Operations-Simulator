@@ -6,6 +6,7 @@ import model.Scope;
 import model.StepDefinition;
 import model.Transaction;
 import model.Unit;
+import model.VariableChange;
 import model.VariableDefinition;
 import model.VariableValue;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,8 +37,8 @@ public class TransactionCsvExporterTest {
         );
 
         List<StepDefinition> stepDefinitions = Arrays.asList(
-            new StepDefinition("Order nuts", "Nuts", 50),
-            new StepDefinition("Order bolts", "Bolts", 25)
+            new StepDefinition("Order nuts",Arrays.asList(new VariableChange("Nuts", 50),new VariableChange("Supply_Costs",100)) ),
+            new StepDefinition("Order bolts", Arrays.asList(new VariableChange("Bolts", 25),new VariableChange("Supply_Costs",50)))
         );
 
         mockConfiguration = new Configuration(scope, variableDefinitions, stepDefinitions);
@@ -56,13 +57,13 @@ public class TransactionCsvExporterTest {
         List<VariableValue> variableValues2 = Arrays.asList(
             new VariableValue("Nuts", 150),
             new VariableValue("Bolts", 200),
-            new VariableValue("Supply_Costs", 0)
+            new VariableValue("Supply_Costs", 100)
         );
 
         List<VariableValue> variableValues3 = Arrays.asList(
             new VariableValue("Nuts", 150),
             new VariableValue("Bolts", 225),
-            new VariableValue("Supply_Costs", 0)
+            new VariableValue("Supply_Costs", 150)
         );
 
         List<Transaction> transactions = Arrays.asList(
@@ -76,8 +77,8 @@ public class TransactionCsvExporterTest {
         String expected = 
         	    "Date, Description, Nuts (Quantity), Bolts (Quantity), Supply_Costs (Money)\n" +
         	    "2026/08/01, Start simulation, 100, 200, $0.00\n" +
-        	    "2026/08/01, Order nuts, 150, 200, $0.00\n" +
-        	    "2026/08/01, Order bolts, 150, 225, $0.00\n";
+        	    "2026/08/01, Order nuts, 150, 200, $100.00\n" +
+        	    "2026/08/01, Order bolts, 150, 225, $150.00\n";
 
         assertEquals(expected, result, "Generated CSV string should match expected rows format with units.");
     }
