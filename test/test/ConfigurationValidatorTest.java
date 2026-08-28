@@ -31,11 +31,12 @@ public class ConfigurationValidatorTest {
 		List<VariableDefinition> variablesDefinition = new ArrayList<>();
 		variablesDefinition.add(new VariableDefinition("Nuts", 100, Unit.QUANTITY));
 		variablesDefinition.add(new VariableDefinition("Supply_Costs", 0, Unit.MONEY));
+		variablesDefinition.add(new VariableDefinition("Revenue", 0, Unit.MONEY));
 
 		List<StepDefinition> stepDefinition = new ArrayList<>();
 		stepDefinition.add(new StepDefinition("Order Nuts", Arrays.asList(
 				new VariableChange("Nuts", 50),
-				new VariableChange("Supply_Costs", 100))));
+				new VariableChange("Supply_Costs", 100)),Frequency.MONTHSTART));
 
 		return new Configuration(scope, variablesDefinition, stepDefinition);
 	}
@@ -74,7 +75,7 @@ public class ConfigurationValidatorTest {
 	@Test
 	void testValidate_UndefinedVariableInStep_HasError() {
 
-		validConfig.getStepDefinitions().add(new StepDefinition("Order Bolts", Arrays.asList(new VariableChange("Bolts", 50))));
+		validConfig.getStepDefinitions().add(new StepDefinition("Order Bolts", Arrays.asList(new VariableChange("Bolts", 50)),Frequency.MONTHSTART));
 
 		List<String> errors = configValidator.validate(validConfig);
 

@@ -1,6 +1,7 @@
 package test;
 
 import handler.StepConfigurationLineHandler;
+import model.Frequency;
 import model.StepDefinition;
 import model.VariableChange;
 import java.util.List;
@@ -22,9 +23,13 @@ public class StepConfigurationLineHandlerTest {
 	}
 
 	@ParameterizedTest
-	@CsvSource({ "'STEP | Order Nuts | Nuts: 50', 'Valid step line with Nuts variable'",
-			"'STEP | Order Bolts | Bolts: 10', 'Valid step line with Bolts variable'" ,
-			"'STEP | Order Nuts | Nuts: 50, Supply_Costs: 100','Valid step line with two variable changes'"})
+	@CsvSource({
+	    "'STEP | Order Nuts | Nuts: 50 | MONTHSTART', 'one variable change plus frequency'",
+	    "'STEP | Order Nuts | Nuts: 50, Supply_Costs: 100 | MONTHSTART', 'two variable changes plus frequency'",
+	    "'STEP | Sales of Nuts | Nuts: -75 | MONTHEND', 'MONTHEND with negative change'",
+	    "'STEP | Weekly check | Nuts: 1 | WEEKLY', 'Frequency is WEEKLY'",
+	    "'STEP | Daily check | Nuts: 1 | DAILY', 'Frequency is DAILY'"
+	})
 	void testValidateConfigurationLine_ValidFormat(String line, String description) {
 		assertTrue(handler.validateConfigurationLine(line), "Successful scenario: " + description);
 	}
@@ -39,14 +44,16 @@ public class StepConfigurationLineHandlerTest {
 			"'STEP | Order Nuts | Nuts: 50, Supply_Costs: ABC', 'Non-numeric amount in second variable change'",
 			"'STEP | Order Nuts | Nuts: 50, Supply_Costs:', 'Missing amount in second variable change'",
 			"'STEP | Order Nuts | Nuts: 50, : 100', 'Missing variable name in second variable change'",
-			"'STEP | Order Nuts | Nuts: 50, Supply_Costs', 'Missing colon and variable value in second variable change'"})
+			"'STEP | Order Nuts | Nuts: 50, Supply_Costs', 'Missing colon and variable value in second variable change'",
+			"'STEP | Order Nuts | Nuts: 50, Supply_Costs: 100| ', 'Missing step frequency'",
+			"'STEP | Order Nuts | Nuts: 50, Supply_Costs:100 | 123', 'invalid frequency'"})
 	void testValidateConfigurationLine_InvalidFormat(String line, String problem) {
 		assertFalse(handler.validateConfigurationLine(line), "Failed scenario: " + problem);
 	}
 
 	@Test
 	void testGetConfigurationValue_Success() {
-		Object value = handler.getConfigurationValue("STEP | Order Nuts | Nuts: 50, Supply_Costs: 100");
+		Object value = handler.getConfigurationValue("STEP | Order Nuts | Nuts: 50, Supply_Costs: 100 |MONTHSTART");
 
 		assertTrue(value instanceof StepDefinition);
 		StepDefinition stepDefinition = (StepDefinition) value;
@@ -56,5 +63,6 @@ public class StepConfigurationLineHandlerTest {
 		assertEquals("Supply_Costs", varChanges.get(1).getVariableName(),"the variable name should parse Supply_Costs");
 		assertEquals(50, varChanges.get(0).getModifyBy(), "the modify value of Nuts should be 50");
 		assertEquals(100, varChanges.get(1).getModifyBy(), "the modify value of Supply_Costs should be 100");
+		assertEquals(Frequency.MONTHSTART,stepDefinition.getFrequency());
 	}
 }

@@ -7,9 +7,9 @@ public class StepState {
     private final StepDefinition stepDefinition;
     private LocalDate dateToRun;
 
-    public StepState(StepDefinition stepDefinition, LocalDate dateToRun) {
+    public StepState(StepDefinition stepDefinition, LocalDate startDate) {
         this.stepDefinition = stepDefinition;
-        this.dateToRun = dateToRun;
+        this.dateToRun = stepDefinition.getFrequency().getFirstRunDate(startDate);
     }
 
     public StepDefinition getStepDefinition() {
@@ -24,7 +24,7 @@ public class StepState {
         return dateToRun;
     }
 
-    public void setDateToRun(LocalDate dateToRun) {
-        this.dateToRun = dateToRun;
+    public void setDateToRun() {
+        this.dateToRun = stepDefinition.getFrequency().getNextRunDate(dateToRun);
     }
 }

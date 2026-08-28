@@ -27,7 +27,7 @@ public class SimulatorTest {
 
 		List<Transaction> result = simulator.run();
 
-		assertEquals(7, result.size());
+		assertEquals(13, result.size());
 	}
 
 	@Test
@@ -36,18 +36,21 @@ public class SimulatorTest {
 		List<Transaction> result = simulator.run();
 
 		Transaction last = result.get(result.size() - 1);
-		assertEquals(3, last.getVariableValues().size());
+		assertEquals(4, last.getVariableValues().size());
 
-		assertContainsVariable(last, "Nuts", 250);
-		assertContainsVariable(last, "Bolts", 275);
+		assertContainsVariable(last, "Nuts", 25);
+		assertContainsVariable(last, "Bolts", 125);
 		assertContainsVariable(last, "Supply_Costs", 450);
+		assertContainsVariable(last,"Revenue",1800);
 	}
 
 	private Configuration createDefaultConfiguration() {
-		return new Configuration(new Scope(LocalDate.of(2026, 8, 1), LocalDate.of(2026, 10, 31)),
-				Arrays.asList(new VariableDefinition("Nuts", 100,Unit.QUANTITY), new VariableDefinition("Bolts", 200,Unit.QUANTITY),new VariableDefinition("Supply_Costs", 0, Unit.MONEY)), 
-				Arrays.asList(new StepDefinition("Order Nuts",Arrays.asList(new VariableChange( "Nuts", 50),new VariableChange("Supply_Costs",100))) ,
-						new StepDefinition("Order Bolts", Arrays.asList(new VariableChange("Bolts", 25),new VariableChange("Supply_Costs",50)))));
+		return new Configuration(new Scope(LocalDate.of(2026, 8, 1), LocalDate.of(2026, 11, 1)),
+				Arrays.asList(new VariableDefinition("Nuts", 100,Unit.QUANTITY), new VariableDefinition("Bolts", 200,Unit.QUANTITY),new VariableDefinition("Supply_Costs", 0, Unit.MONEY),new VariableDefinition("Revenue",0,Unit.MONEY)), 
+				Arrays.asList(new StepDefinition("Order Nuts",Arrays.asList(new VariableChange( "Nuts", 50),new VariableChange("Supply_Costs",100)),Frequency.MONTHSTART) ,
+						new StepDefinition("Order Bolts", Arrays.asList(new VariableChange("Bolts", 25),new VariableChange("Supply_Costs",50)),Frequency.MONTHSTART),
+						new StepDefinition("Sales of Nuts",Arrays.asList(new VariableChange( "Nuts", -75),new VariableChange("Revenue",200)),Frequency.MONTHEND) ,
+						new StepDefinition("Sales of Bolts", Arrays.asList(new VariableChange("Bolts", -50),new VariableChange("Revenue",400)),Frequency.MONTHEND)));
 	}
 
 	private void assertContainsVariable(Transaction transaction, String variableName, int expectedValue) {

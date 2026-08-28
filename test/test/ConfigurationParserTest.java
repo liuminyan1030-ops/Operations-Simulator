@@ -1,6 +1,8 @@
 package test;
 
 import model.Configuration;
+import model.Frequency;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -27,8 +29,12 @@ public class ConfigurationParserTest {
       assertNotNull(config);
       assertEquals("2026/08/01",config.getScope().getStartDate().format(ConfigurationConstants.DATE_FORMATTER));
       assertEquals("2026/11/01",config.getScope().getEndDate().format(ConfigurationConstants.DATE_FORMATTER));
-      assertEquals(3,config.getVariableDefinitions().size());
-      assertEquals(2,config.getStepDefinitions().size());
+      assertEquals(4,config.getVariableDefinitions().size());
+      assertEquals(4,config.getStepDefinitions().size());
+      assertEquals(Frequency.MONTHSTART, config.getStepDefinitions().get(0).getFrequency());
+      assertEquals(Frequency.MONTHSTART, config.getStepDefinitions().get(1).getFrequency());
+      assertEquals(Frequency.MONTHEND, config.getStepDefinitions().get(2).getFrequency());
+      assertEquals(Frequency.MONTHEND, config.getStepDefinitions().get(3).getFrequency());
 
     }
 
