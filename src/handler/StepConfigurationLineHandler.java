@@ -67,7 +67,7 @@ public class StepConfigurationLineHandler extends AbstractConfigurationLineHandl
 			varChanges.add(new VariableChange(variableChangeVariableName, variableModifyValue));
 
 		}
-		return new StepDefinition(stepName, varChanges,Frequency.valueOf(frequencyStr));
+		return new StepDefinition(stepName, varChanges,Frequency.valueOf(frequencyStr.toUpperCase()));
 
 	}
 }

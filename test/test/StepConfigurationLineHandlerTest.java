@@ -35,18 +35,20 @@ public class StepConfigurationLineHandlerTest {
 	}
 
 	@ParameterizedTest
-	@CsvSource({ "'STEP | | Nuts: 50', 'Missing step name'",
-			"'STEP | Order Nuts | ', 'Missing variable definition parts'",
-			"'STEP | Order Nuts | Nuts', 'Missing colon and amount in variable mapping'",
-			"'STEP | Order Nuts | Nuts:', 'Missing amount after colon'",
-			"'STEP | Order Nuts | Nuts: ABC', 'Non-numeric amount value'",
-			"'VAR | Order Nuts | Nuts: 50', 'Incorrect prefix for Step handler'" ,
-			"'STEP | Order Nuts | Nuts: 50, Supply_Costs: ABC', 'Non-numeric amount in second variable change'",
-			"'STEP | Order Nuts | Nuts: 50, Supply_Costs:', 'Missing amount in second variable change'",
-			"'STEP | Order Nuts | Nuts: 50, : 100', 'Missing variable name in second variable change'",
-			"'STEP | Order Nuts | Nuts: 50, Supply_Costs', 'Missing colon and variable value in second variable change'",
-			"'STEP | Order Nuts | Nuts: 50, Supply_Costs: 100| ', 'Missing step frequency'",
-			"'STEP | Order Nuts | Nuts: 50, Supply_Costs:100 | 123', 'invalid frequency'"})
+	@CsvSource({
+		"'STEP | | Nuts: 50 | MONTHSTART', 'Missing step name'",
+		"'STEP | Order Nuts |  | MONTHSTART', 'Missing variable definition parts'",
+		"'STEP | Order Nuts | Nuts | MONTHSTART', 'Missing colon and amount in variable mapping'",
+		"'STEP | Order Nuts | Nuts: | MONTHSTART', 'Missing amount after colon'",
+		"'STEP | Order Nuts | Nuts: ABC | MONTHSTART', 'Non-numeric amount value'",
+		"'VAR | Order Nuts | Nuts: 50 | MONTHSTART', 'Incorrect prefix for Step handler'",
+		"'STEP | Order Nuts | Nuts: 50, Supply_Costs: ABC | MONTHSTART', 'Non-numeric amount in second variable change'",
+		"'STEP | Order Nuts | Nuts: 50, Supply_Costs: | MONTHSTART', 'Missing amount in second variable change'",
+		"'STEP | Order Nuts | Nuts: 50, : 100 | MONTHSTART', 'Missing variable name in second variable change'",
+		"'STEP | Order Nuts | Nuts: 50, Supply_Costs | MONTHSTART', 'Missing colon and variable value in second variable change'",
+		"'STEP | Order Nuts | Nuts: 50, Supply_Costs: 100 | ', 'Missing step frequency'",
+		"'STEP | Order Nuts | Nuts: 50, Supply_Costs: 100 | 123', 'invalid frequency'"
+})
 	void testValidateConfigurationLine_InvalidFormat(String line, String problem) {
 		assertFalse(handler.validateConfigurationLine(line), "Failed scenario: " + problem);
 	}
