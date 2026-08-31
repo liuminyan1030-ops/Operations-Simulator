@@ -24,7 +24,7 @@ public class StepState {
         return dateToRun;
     }
 
-    public void setDateToRun() {
+    public void setNextRunDate() {
         this.dateToRun = stepDefinition.getFrequency().getNextRunDate(dateToRun);
     }
 }
