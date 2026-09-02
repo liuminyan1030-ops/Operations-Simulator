@@ -1,76 +1,70 @@
 package test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import model.Frequency;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import java.time.LocalDate;
 
-import org.junit.jupiter.api.Test;
-
-import model.Frequency;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class FrequencyTest {
-	private static final LocalDate STARTDATE=LocalDate.of(2026, 8, 1);
-	
-	@Test 
-	public void Test_MonthStart_FirstRun_WhenStartIsFirstOfMonth_ShouldBeStartDate() {
-		LocalDate firstRunDate=Frequency.MONTHSTART.getFirstRunDate(STARTDATE);
-		assertEquals(LocalDate.of(2026,8, 1),firstRunDate);	
+
+	enum Mode {
+		FirstRun,
+		NextRun
 	}
-	
-	@Test
-	public void Test_MonthStart_FirstRun_WhenStartIsMidOfMonth_ShouldBeFirstOfNextMonth() {
-		LocalDate firstRunDate=Frequency.MONTHSTART.getFirstRunDate(LocalDate.of(2026, 8, 15));
-		assertEquals(LocalDate.of(2026, 9, 1),firstRunDate);
+
+	@ParameterizedTest
+	@CsvSource({
+			"FirstRun, 2026-08-01, 2026-08-01, 'When start is first day of month first run is the start date'",
+			"FirstRun, 2026-08-02, 2026-09-01, 'When start is not first of month first run is next month start'",
+			"FirstRun, 2026-08-15, 2026-09-01, 'When start is mid month first run is next month start'",
+			"FirstRun, 2026-08-31, 2026-09-01, 'When start is last day of month first run is next month start'",
+			"NextRun, 2026-08-01, 2026-09-01, 'Next run after a month start is the first day of next month'"
+	})
+	void Test_FirstRunAndNextRun_MonthStart(Mode mode, LocalDate inputDate, LocalDate expectedDate,
+			String description) {
+		assertEquals(expectedDate, runDate(Frequency.MONTHSTART, mode, inputDate), description);
 	}
-	
-	@Test
-	public void Test_MonthEnd_FirstRun_WhenStartIsFirstofMonth_ShouldBeLastDayOfThatMonth() {
-		LocalDate firstRunDate=Frequency.MONTHEND.getFirstRunDate(STARTDATE);
-		assertEquals(LocalDate.of(2026, 8, 31),firstRunDate);
+
+	@ParameterizedTest
+	@CsvSource({
+			"FirstRun, 2026-08-01, 2026-08-31, 'When start is first day of month first run is last day of that month'",
+			"FirstRun, 2026-08-15, 2026-08-31, 'When start is mid month first run is still last day of that month'",
+			"FirstRun, 2026-08-31, 2026-08-31, 'When start is already last day first run stays on that day'",
+			"NextRun, 2026-08-31, 2026-09-30, 'Next run after month end is last day of the following month'",
+			"NextRun, 2026-01-31, 2026-02-28, 'Next run after January 31 is last day of February'"
+	})
+	void Test_FirstRunAndNextRun_MonthEnd(Mode mode, LocalDate inputDate, LocalDate expectedDate,
+			String description) {
+		assertEquals(expectedDate, runDate(Frequency.MONTHEND, mode, inputDate), description);
 	}
-	
-	@Test
-	public void Test_MonthEnd_FirstRun_WhenStartIsLastDayOfMonth_ShouldBeOnThatDay() {
-		LocalDate firstRunDate=Frequency.MONTHEND.getFirstRunDate(LocalDate.of(2026, 8, 31));
-		assertEquals(LocalDate.of(2026, 8, 31),firstRunDate);
+
+	@ParameterizedTest
+	@CsvSource({
+			"FirstRun, 2026-08-01, 2026-08-08, 'First weekly run is seven days after the start date'",
+			"NextRun, 2026-08-08, 2026-08-15, 'Next weekly run adds another seven days'"
+	})
+	void Test_FirstRunAndNextRun_Weekly(Mode mode, LocalDate inputDate, LocalDate expectedDate,
+			String description) {
+		assertEquals(expectedDate, runDate(Frequency.WEEKLY, mode, inputDate), description);
 	}
-	
-	@Test
-	public void Test_Weekly_FirstRun_ShouldBeSevenDaysAfterStartDate() {
-		LocalDate firstRunDate=Frequency.WEEKLY.getFirstRunDate(STARTDATE);
-		assertEquals(LocalDate.of(2026, 8, 8),firstRunDate);
+
+	@ParameterizedTest
+	@CsvSource({
+			"FirstRun, 2026-08-01, 2026-08-01, 'First daily run is the start date'",
+			"NextRun, 2026-08-01, 2026-08-02, 'Next daily run is the following day'"
+	})
+	void Test_FirstRunAndNextRun_Daily(Mode mode, LocalDate inputDate, LocalDate expectedDate,
+			String description) {
+		assertEquals(expectedDate, runDate(Frequency.DAILY, mode, inputDate), description);
 	}
-	
-	@Test
-	public void Test_Daily_FirstRun_ShouldBeStartDate() {
-		LocalDate firstRunDate=Frequency.DAILY.getFirstRunDate(STARTDATE);
-		assertEquals(STARTDATE,firstRunDate);
+
+	private LocalDate runDate(Frequency frequency, Mode mode, LocalDate inputDate) {
+		if (mode == Mode.FirstRun) {
+			return frequency.getFirstRunDate(inputDate);
+		}
+		return frequency.getNextRunDate(inputDate);
 	}
-	
-	@Test
-	public void Test_Daily_NextRun_ShouldBeNextDayofStartDate() {
-		LocalDate nextRunDate=Frequency.DAILY.getNextRunDate(STARTDATE);
-		assertEquals(LocalDate.of(2026,8,2),nextRunDate);
-	}
-	
-	@Test
-	public void Test_Weekly_NextRun_ShouldBeAddSevenDays() {
-		LocalDate nextRunDate=Frequency.WEEKLY.getNextRunDate(LocalDate.of(2026, 8, 8));
-		assertEquals(LocalDate.of(2026, 8, 15),nextRunDate);
-	}
-	
-	@Test
-	public void Test_MonthEnd_NextRun_ShouldBeLastDayofNextMonth() {
-		LocalDate nextRunDate1=Frequency.MONTHEND.getNextRunDate(LocalDate.of(2026, 8, 31));
-		LocalDate nextRunDate2=Frequency.MONTHEND.getNextRunDate(LocalDate.of(2026, 1, 31));
-		assertEquals(LocalDate.of(2026, 9, 30),nextRunDate1);
-		assertEquals(LocalDate.of(2026, 2, 28),nextRunDate2);
-	}
-	
-	@Test
-	public void Test_MonthStart_NextRun_ShouldBeFirstDayOfNextMonth() {
-		LocalDate nextRunDate=Frequency.MONTHSTART.getNextRunDate(STARTDATE);
-		assertEquals(LocalDate.of(2026, 9, 1),nextRunDate);
-	}
-	
 }
