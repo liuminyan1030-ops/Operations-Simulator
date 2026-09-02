@@ -4,6 +4,9 @@ END_DATE | 2026/11/01
 VAR | Nuts | 100 | Quantity
 VAR | Bolts | 200 | Quantity
 VAR | Supply_Costs | 0 | Money
+VAR | Revenue | 0 | Money
 
-STEP | Order nuts | Nuts: 50, Supply_Costs: 100
-STEP | Order bolts | Bolts: 25, Supply_Costs: 50
+STEP | Order nuts | Nuts: 50, Supply_Costs: 100 | MONTHSTART
+STEP | Order bolts | Bolts: 25, Supply_Costs: 50 | MONTHSTART
+STEP | Sales of nuts | Nuts: -75, Revenue: 200 | MONTHEND
+STEP | Sales of bolts | Bolts: -50, Revenue: 400 | MONTHEND

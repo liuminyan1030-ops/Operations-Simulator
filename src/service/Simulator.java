@@ -76,7 +76,7 @@ public class Simulator {
                     stepDefinition.getName(),
                     copyVariables(variables)));
 
-            stepState.setDateToRun(stepState.getDateToRun().plusMonths(1));
+            stepState.setNextRunDate();
         }
     }
 

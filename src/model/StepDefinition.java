@@ -6,10 +6,12 @@ public class StepDefinition {
 
     private String name;
     private List<VariableChange> variableChanges;
+    private Frequency frequency;
 
-    public StepDefinition(String name, List<VariableChange> variableChanges) {
+    public StepDefinition(String name, List<VariableChange> variableChanges,Frequency frequency) {
         this.name = name;
         this.variableChanges=variableChanges;
+        this.frequency=frequency;
     }
 
     public String getName() {
@@ -18,6 +20,10 @@ public class StepDefinition {
 
     public List<VariableChange> getVariableChanges() {
         return variableChanges;
+    }
+    
+    public Frequency getFrequency() {
+    	return frequency;
     }
 
  

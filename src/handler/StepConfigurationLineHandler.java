@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import constants.ConfigurationConstants;
+import model.Frequency;
 import model.StepDefinition;
 import model.VariableChange;
 
@@ -18,14 +19,20 @@ public class StepConfigurationLineHandler extends AbstractConfigurationLineHandl
 			return false;
 
 		String[] parts = line.split("\\|");
-		if (parts.length != 3)
+		if (parts.length != 4)
 			return false;
 
 		String stepName = parts[1].trim();
 		String variableStr = parts[2].trim();
+		String frequencyStr=parts[3].trim();
 
-		if (stepName.isEmpty() || variableStr.isEmpty())
+		if (stepName.isEmpty() || variableStr.isEmpty()||frequencyStr.isEmpty())
 			return false;
+		try {
+			Frequency.valueOf(frequencyStr.toUpperCase());
+		}catch(IllegalArgumentException e) {
+			return false;
+		}
 		String[] variableChangeParts = variableStr.split(",");
 		for (String variableChangePart : variableChangeParts) {
 			String[] variableChangeKeyValue = variableChangePart.split(":");
@@ -50,6 +57,7 @@ public class StepConfigurationLineHandler extends AbstractConfigurationLineHandl
 		String[] parts = line.split("\\|");
 		String stepName = parts[1].trim();
 		String[] variableChangeParts = parts[2].trim().split(",");
+		String frequencyStr=parts[3].trim();
 		List<VariableChange> varChanges = new ArrayList<>();
 		for (String variableChangePart : variableChangeParts) {
 			String[] variableChangeKeyValue = variableChangePart.split(":");
@@ -59,7 +67,7 @@ public class StepConfigurationLineHandler extends AbstractConfigurationLineHandl
 			varChanges.add(new VariableChange(variableChangeVariableName, variableModifyValue));
 
 		}
-		return new StepDefinition(stepName, varChanges);
+		return new StepDefinition(stepName, varChanges,Frequency.valueOf(frequencyStr.toUpperCase()));
 
 	}
 }

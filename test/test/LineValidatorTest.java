@@ -28,12 +28,13 @@ public class LineValidatorTest {
     }
 
     @Test
-    void testValidate_ValidLines_ReturnsEmptyList() {
+    void testValidate_ValidLines_ReturnsNoErrors() {
         List<String> validLines = Arrays.asList(
             "START_DATE | 2026/08/01",
-            "END_DATE | 2026/08/31",
+            "END_DATE | 2026/11/01",
             "VAR | Nuts | 100 | Quantity",
-            "STEP | Order Nuts | Nuts: 50"
+            "VAR | Supply_Costs | 100 | Money",
+            "STEP | Order Nuts | Nuts: 50, Supply_Costs: 100 | MONTHSTART"
         );
 
         List<ValidationError> errors = lineValidator.validate(validLines);
@@ -46,11 +47,12 @@ public class LineValidatorTest {
         		 "START_DATE | ",
                  "END_DATE | abc",
                  "VAR | Nuts | ",
-                 "STEP | Order Nuts | Nuts: "
+                 "STEP | Order Nuts | Nuts:50,Supply_Costs: 100| abc "
+                 
         );
 
         List<ValidationError> errors = lineValidator.validate(invalidLines);
         assertFalse(errors.isEmpty(), "Invalid lines should produce validation errors");
-        assertEquals(4, errors.size(), "Should produce exactly 4 validation errors for 4 invalid lines");
+        assertEquals(4, errors.size(), "Should produce one error for each configuration line handler");
     }
 }
